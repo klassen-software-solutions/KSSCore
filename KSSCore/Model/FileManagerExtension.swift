@@ -11,8 +11,17 @@ import Foundation
 
 public extension FileManager {
 
-    /*!
+    /**
      Search for a directory and create it if it does not already exist.
+
+     - parameters:
+        - url: The URL of the directory to find (or create).
+        - createIntermediates: If true then any intermediate directories are also created.
+        - attributes: File attributes for the directory, if it is created.
+
+     - throws:
+     Any error that may be thrown by createDirectory.
+     
      */
     func findOrCreateDirectory(at url: URL,
                                withIntermediateDirectories createIntermediates: Bool,

@@ -9,19 +9,29 @@
 import Foundation
 
 
-/*!
+/**
  This extension adds methods to JSONSerialization to allow user defined classes to
  be serialized and unserialized. This is done by using introspection to convert them
  to the arrays and dictionaries that JSONSerialization can then use.
  */
 public extension JSONSerialization {
 
-    /*!
-     Generate JSON data from a generic Swift object. Note that it does not currenlty
+    /**
+     Generate JSON data from a generic Swift object. Note that it does not currently
      work with struct values, it requires a class. Although structs may be contained in
      the class, they cannot be the root object. I have not yet determine why that is
      the case. (Mirror.children.count returns 0 for structs at the root, but proper numbers
      for structs that have been passed in as part of a class.)
+
+     - parameters:
+        - obj: The object to serialize.
+        - opts: The JSON writing options.
+
+     - throws:
+     Any error that data(withJSONObject:, options:) may throw.
+
+     - returns:
+     The JSON data.
      */
     class func data(fromSwiftObject obj: Any,
                     options opts: JSONSerialization.WritingOptions = []) throws -> Data
@@ -36,9 +46,18 @@ public extension JSONSerialization {
         }
     }
 
-    /*!
+    /**
      Write JSON data for a generic Swift object to a stream. See the warnings for
      data:fromSwiftObject.
+
+     - parameters:
+        - obj: The object to serialize.
+        - to: The stream to which to write. The stream should be opened and configured.
+        - options: The JSON writing options.
+        - error: An output error.
+
+     - returns:
+     The number of bytes written to the stream, or 0 if an error occurs.
      */
     class func writeSwiftObject(obj: Any,
                                 to: OutputStream,

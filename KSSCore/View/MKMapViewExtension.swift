@@ -9,7 +9,7 @@
 import MapKit
 
 public extension MKMapView {
-    /*!
+    /**
      zoomIn zooms the map in approximately the same amount as a single click on
      the zoom controls. If zooming is not enabled, then this does nothing.
      */
@@ -17,7 +17,7 @@ public extension MKMapView {
         doZoom(0.5)
     }
 
-    /*!
+    /**
      zoomOut zooms the map out approximately the same amount as a single click on
      the zoom controls. If zooming is not enabled, then this does nothing.
      */
@@ -25,7 +25,7 @@ public extension MKMapView {
         doZoom(2)
     }
 
-    /*!
+    /**
      snapToNorth rotates the map, if necessary, in order to point it north. If already
      pointing north or if rotations are not enabled, then this does nothing.
      */
@@ -39,7 +39,7 @@ public extension MKMapView {
         }
     }
 
-    /*!
+    /**
      scrollToCurrentLocation will obtain the user's current location and attempt to
      scroll that map to that position.
      */

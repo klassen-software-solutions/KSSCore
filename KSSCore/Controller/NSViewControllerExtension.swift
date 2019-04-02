@@ -13,8 +13,18 @@ import Foundation
 
 public extension NSViewController {
 
-    /*!
+    /**
      Search for and create if necessary a common directory for the containing application.
+
+     - parameters:
+        - directory: The directory we are searching for.
+        - domain: The search domain.
+
+     - throws:
+     Any error that FileManager.findOrCreateDirectory may throw.
+
+     - returns:
+     The URL of the found directory.
      */
     func findOrCreateApplicationDirectory(for directory: FileManager.SearchPathDirectory,
                                           in domain: FileManager.SearchPathDomainMask) throws -> URL

@@ -43,14 +43,23 @@ if [ "${version}" != "${currentVersion}" ] || [ ! -f $outputFile ]; then
     echo "" >> $outputFile
     echo "import Foundation" >> $outputFile
     echo "" >> $outputFile
-    echo "/*!" >> $outputFile
+    echo "/**" >> $outputFile
     echo " Versioning provides details of the application version number and license." >> $outputFile
     echo " */" >> $outputFile
     echo "public class Versioning {" >> $outputFile
+    echo "    /**" >> $outputFile
+    echo "     The current version number." >> $outputFile
+    echo "     */" >> $outputFile
     echo "    public static let version = \"${version}\"" >> $outputFile
     echo "" >> $outputFile
+    echo "    /**" >> $outputFile
+    echo "     The copyright information." >> $outputFile
+    echo "     */" >> $outputFile
     echo "    public static let copyright = \"${copyright}\"" >> $outputFile
     echo "" >> $outputFile
+    echo "    /**" >> $outputFile
+    echo "     The license text." >> $outputFile
+    echo "     */" >> $outputFile
     echo "    public static let license = \"\"\"" >> $outputFile
     echo "${license}" >> $outputFile
     echo "\"\"\"" >> $outputFile
