@@ -1,0 +1,2 @@
+# KSSCore
+Miscellaneous Swift utilities
