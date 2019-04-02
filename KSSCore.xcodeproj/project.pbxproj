@@ -11,6 +11,13 @@
 		AACAA7022252FF9A0005F45E /* KSSCore.h in Headers */ = {isa = PBXBuildFile; fileRef = AACAA6F42252FF9A0005F45E /* KSSCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AACAA7142253050C0005F45E /* Versioning.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACAA7132253050C0005F45E /* Versioning.swift */; };
 		AACAA7162253055F0005F45E /* VersioningTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACAA7152253055F0005F45E /* VersioningTests.swift */; };
+		AACAA718225308BD0005F45E /* MKMapViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACAA717225308BD0005F45E /* MKMapViewExtension.swift */; };
+		AACAA71A225309450005F45E /* ArrayExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACAA719225309450005F45E /* ArrayExtension.swift */; };
+		AACAA71C225309780005F45E /* ArrayExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACAA71B225309780005F45E /* ArrayExtensionTests.swift */; };
+		AACAA71E225309CF0005F45E /* FileManagerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACAA71D225309CF0005F45E /* FileManagerExtension.swift */; };
+		AACAA72022530A540005F45E /* JSONSerializationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACAA71F22530A540005F45E /* JSONSerializationExtension.swift */; };
+		AACAA72222530AE10005F45E /* JSONSerializationExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACAA72122530AE10005F45E /* JSONSerializationExtensionTests.swift */; };
+		AACAA72422530B100005F45E /* NSViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACAA72322530B100005F45E /* NSViewControllerExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,6 +41,13 @@
 		AACAA7112253027B0005F45E /* buildversion.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = buildversion.sh; sourceTree = "<group>"; };
 		AACAA7132253050C0005F45E /* Versioning.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Versioning.swift; sourceTree = "<group>"; };
 		AACAA7152253055F0005F45E /* VersioningTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersioningTests.swift; sourceTree = "<group>"; };
+		AACAA717225308BD0005F45E /* MKMapViewExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MKMapViewExtension.swift; sourceTree = "<group>"; };
+		AACAA719225309450005F45E /* ArrayExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrayExtension.swift; sourceTree = "<group>"; };
+		AACAA71B225309780005F45E /* ArrayExtensionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrayExtensionTests.swift; sourceTree = "<group>"; };
+		AACAA71D225309CF0005F45E /* FileManagerExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileManagerExtension.swift; sourceTree = "<group>"; };
+		AACAA71F22530A540005F45E /* JSONSerializationExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONSerializationExtension.swift; sourceTree = "<group>"; };
+		AACAA72122530AE10005F45E /* JSONSerializationExtensionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONSerializationExtensionTests.swift; sourceTree = "<group>"; };
+		AACAA72322530B100005F45E /* NSViewControllerExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSViewControllerExtension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +104,8 @@
 			isa = PBXGroup;
 			children = (
 				AACAA7012252FF9A0005F45E /* Info.plist */,
+				AACAA71B225309780005F45E /* ArrayExtensionTests.swift */,
+				AACAA72122530AE10005F45E /* JSONSerializationExtensionTests.swift */,
 				AACAA7152253055F0005F45E /* VersioningTests.swift */,
 			);
 			path = KSSCoreTests;
@@ -98,6 +114,9 @@
 		AACAA70B225302340005F45E /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				AACAA719225309450005F45E /* ArrayExtension.swift */,
+				AACAA71D225309CF0005F45E /* FileManagerExtension.swift */,
+				AACAA71F22530A540005F45E /* JSONSerializationExtension.swift */,
 				AACAA7132253050C0005F45E /* Versioning.swift */,
 			);
 			path = Model;
@@ -106,6 +125,7 @@
 		AACAA70C2253023A0005F45E /* View */ = {
 			isa = PBXGroup;
 			children = (
+				AACAA717225308BD0005F45E /* MKMapViewExtension.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -113,6 +133,7 @@
 		AACAA70D225302410005F45E /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				AACAA72322530B100005F45E /* NSViewControllerExtension.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -258,7 +279,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AACAA71A225309450005F45E /* ArrayExtension.swift in Sources */,
+				AACAA72422530B100005F45E /* NSViewControllerExtension.swift in Sources */,
+				AACAA71E225309CF0005F45E /* FileManagerExtension.swift in Sources */,
 				AACAA7142253050C0005F45E /* Versioning.swift in Sources */,
+				AACAA718225308BD0005F45E /* MKMapViewExtension.swift in Sources */,
+				AACAA72022530A540005F45E /* JSONSerializationExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -266,7 +292,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AACAA72222530AE10005F45E /* JSONSerializationExtensionTests.swift in Sources */,
 				AACAA7162253055F0005F45E /* VersioningTests.swift in Sources */,
+				AACAA71C225309780005F45E /* ArrayExtensionTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
