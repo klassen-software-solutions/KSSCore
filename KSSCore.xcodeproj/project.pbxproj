@@ -8,8 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		AACAA6FB2252FF9A0005F45E /* KSSCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACAA6F12252FF9A0005F45E /* KSSCore.framework */; };
-		AACAA7002252FF9A0005F45E /* KSSCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACAA6FF2252FF9A0005F45E /* KSSCoreTests.swift */; };
 		AACAA7022252FF9A0005F45E /* KSSCore.h in Headers */ = {isa = PBXBuildFile; fileRef = AACAA6F42252FF9A0005F45E /* KSSCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AACAA7142253050C0005F45E /* Versioning.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACAA7132253050C0005F45E /* Versioning.swift */; };
+		AACAA7162253055F0005F45E /* VersioningTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACAA7152253055F0005F45E /* VersioningTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,8 +28,12 @@
 		AACAA6F42252FF9A0005F45E /* KSSCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KSSCore.h; sourceTree = "<group>"; };
 		AACAA6F52252FF9A0005F45E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AACAA6FA2252FF9A0005F45E /* KSSCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KSSCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		AACAA6FF2252FF9A0005F45E /* KSSCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KSSCoreTests.swift; sourceTree = "<group>"; };
 		AACAA7012252FF9A0005F45E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AACAA70F2253027B0005F45E /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		AACAA7102253027B0005F45E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		AACAA7112253027B0005F45E /* buildversion.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = buildversion.sh; sourceTree = "<group>"; };
+		AACAA7132253050C0005F45E /* Versioning.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Versioning.swift; sourceTree = "<group>"; };
+		AACAA7152253055F0005F45E /* VersioningTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersioningTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +58,7 @@
 		AACAA6E72252FF9A0005F45E = {
 			isa = PBXGroup;
 			children = (
+				AACAA70E225302630005F45E /* Top Level */,
 				AACAA6F32252FF9A0005F45E /* KSSCore */,
 				AACAA6FE2252FF9A0005F45E /* KSSCoreTests */,
 				AACAA6F22252FF9A0005F45E /* Products */,
@@ -73,6 +79,9 @@
 			children = (
 				AACAA6F42252FF9A0005F45E /* KSSCore.h */,
 				AACAA6F52252FF9A0005F45E /* Info.plist */,
+				AACAA70B225302340005F45E /* Model */,
+				AACAA70C2253023A0005F45E /* View */,
+				AACAA70D225302410005F45E /* Controller */,
 			);
 			path = KSSCore;
 			sourceTree = "<group>";
@@ -80,10 +89,42 @@
 		AACAA6FE2252FF9A0005F45E /* KSSCoreTests */ = {
 			isa = PBXGroup;
 			children = (
-				AACAA6FF2252FF9A0005F45E /* KSSCoreTests.swift */,
 				AACAA7012252FF9A0005F45E /* Info.plist */,
+				AACAA7152253055F0005F45E /* VersioningTests.swift */,
 			);
 			path = KSSCoreTests;
+			sourceTree = "<group>";
+		};
+		AACAA70B225302340005F45E /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				AACAA7132253050C0005F45E /* Versioning.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		AACAA70C2253023A0005F45E /* View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		AACAA70D225302410005F45E /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		AACAA70E225302630005F45E /* Top Level */ = {
+			isa = PBXGroup;
+			children = (
+				AACAA7112253027B0005F45E /* buildversion.sh */,
+				AACAA70F2253027B0005F45E /* LICENSE */,
+				AACAA7102253027B0005F45E /* README.md */,
+			);
+			name = "Top Level";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -104,6 +145,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = AACAA7052252FF9A0005F45E /* Build configuration list for PBXNativeTarget "KSSCore" */;
 			buildPhases = (
+				AACAA7122253029D0005F45E /* Version */,
 				AACAA6EC2252FF9A0005F45E /* Headers */,
 				AACAA6ED2252FF9A0005F45E /* Sources */,
 				AACAA6EE2252FF9A0005F45E /* Frameworks */,
@@ -148,6 +190,7 @@
 				TargetAttributes = {
 					AACAA6F02252FF9A0005F45E = {
 						CreatedOnToolsVersion = 10.2;
+						LastSwiftMigration = 1020;
 					};
 					AACAA6F92252FF9A0005F45E = {
 						CreatedOnToolsVersion = 10.2;
@@ -189,11 +232,33 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		AACAA7122253029D0005F45E /* Version */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = Version;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "(cd KSSCore ; ../buildversion.sh)\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		AACAA6ED2252FF9A0005F45E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AACAA7142253050C0005F45E /* Versioning.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -201,7 +266,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AACAA7002252FF9A0005F45E /* KSSCoreTests.swift in Sources */,
+				AACAA7162253055F0005F45E /* VersioningTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -268,13 +333,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VALID_ARCHS = x86_64;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -326,12 +392,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALID_ARCHS = x86_64;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -340,6 +407,7 @@
 		AACAA7062252FF9A0005F45E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -359,6 +427,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = kss.cc.KSSCore;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -366,6 +435,7 @@
 		AACAA7072252FF9A0005F45E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -392,6 +462,7 @@
 		AACAA7092252FF9A0005F45E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 23FN26LWBV;
@@ -410,6 +481,7 @@
 		AACAA70A2252FF9A0005F45E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 23FN26LWBV;
