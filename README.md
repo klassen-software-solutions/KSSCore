@@ -14,7 +14,7 @@ class. The code is broken into the following three sub-directories:
  * View - contains UI related items, and
  * Controller - contains extensions to various Apple controller classes
  
- [API Documentation](xxx)
+ [API Documentation](https://www.kss.cc/apis/KSSCore/docs/index.html)
  
  ## Contributing
  
