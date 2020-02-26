@@ -7,7 +7,7 @@
 //
 
 import XCTest
-import KSSCore
+@testable import KSSFoundation
 
 private struct MyTest {
     var param1 = ""

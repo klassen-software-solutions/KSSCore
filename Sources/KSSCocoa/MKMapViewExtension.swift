@@ -10,36 +10,6 @@ import MapKit
 
 public extension MKMapView {
     /**
-     zoomIn zooms the map in approximately the same amount as a single click on
-     the zoom controls. If zooming is not enabled, then this does nothing.
-     */
-    func zoomIn() {
-        doZoom(0.5)
-    }
-
-    /**
-     zoomOut zooms the map out approximately the same amount as a single click on
-     the zoom controls. If zooming is not enabled, then this does nothing.
-     */
-    func zoomOut() {
-        doZoom(2)
-    }
-
-    /**
-     snapToNorth rotates the map, if necessary, in order to point it north. If already
-     pointing north or if rotations are not enabled, then this does nothing.
-     */
-    func snapToNorth() {
-        if isRotateEnabled && camera.heading != 0 {
-            let c = MKMapCamera(lookingAtCenter: camera.centerCoordinate,
-                                fromDistance: camera.altitude,
-                                pitch: camera.pitch,
-                                heading: 0)
-            setCamera(c, animated: true)
-        }
-    }
-
-    /**
      scrollToCurrentLocation will obtain the user's current location and attempt to
      scroll that map to that position.
      */
@@ -51,6 +21,40 @@ public extension MKMapView {
         }
     }
 
+    /**
+     zoomIn zooms the map in approximately the same amount as a single click on
+     the zoom controls. If zooming is not enabled, then this does nothing.
+     */
+    @available(OSX 10.11, *)
+    func zoomIn() {
+        doZoom(0.5)
+    }
+
+    /**
+     zoomOut zooms the map out approximately the same amount as a single click on
+     the zoom controls. If zooming is not enabled, then this does nothing.
+     */
+    @available(OSX 10.11, *)
+    func zoomOut() {
+        doZoom(2)
+    }
+
+    /**
+     snapToNorth rotates the map, if necessary, in order to point it north. If already
+     pointing north or if rotations are not enabled, then this does nothing.
+     */
+    @available(OSX 10.11, *)
+    func snapToNorth() {
+        if isRotateEnabled && camera.heading != 0 {
+            let c = MKMapCamera(lookingAtCenter: camera.centerCoordinate,
+                                fromDistance: camera.altitude,
+                                pitch: camera.pitch,
+                                heading: 0)
+            setCamera(c, animated: true)
+        }
+    }
+
+    @available(OSX 10.11, *)
     private func doZoom(_ factor: Double) {
         if isZoomEnabled {
             let r = region
