@@ -1,30 +1,24 @@
 # KSSCore
 Miscellaneous Swift utilities
 
-## Prerequisites
-
-This framework has no prerequisites other than Xcode and it's Swift implementation.
-
 ## Description
 
-This framework contains a number of utility methods and class extensions related both UI and non-UI
-class. The code is broken into the following three sub-directories:
+This package is divided into a number of Swift Modules providing utility methods related to both
+UI and non-UI classes. At present the UI is only supported on macOS and the non-UI items are
+supported on both macOS and Linux.
 
- * Model - contains the non-UI items
- * View - contains UI related items, and
- * Controller - contains extensions to various Apple controller classes
- 
+The modules provided by this package are the following:
+
+* _KSSFoundation_ - items that depend on nothing but the Foundation classes,
+* _KSSCocoa_ - items that depend on Foundation and Cocoa, and
+* _KSSUI_ - items that depend on Foundation and SwiftUI
+
  [API Documentation](https://www.kss.cc/apis/KSSCore/docs/index.html)
  
  ## Contributing
  
- If you wish to make changes to this library that you believe will be useful to others, you can
- contribute to the project. If you do, there are a number of policies you should follow:
- 
- * Check the issues to see if there are already similar bug reports or enhancements.
- * Feel free to add bug reports and enhancements at any time.
- * Don't work on things that are not part of an approved project.
- * Don't create projects - they are only created the by owner.
- * Projects are created based on conversations on the wiki.
- * Feel free to initiate or join conversations on the wiki.
- * Follow our [Swift Coding Standards](https://www.kss.cc/standards/swift.html).
+If you are going to contribute to this project, please make yourself familiar with our standards and
+procedures:
+
+* [Git Procedures](https://www.kss.cc/standards-git.html)
+* [Swift Coding Standards](https://www.kss.cc/standards-swift.html)

@@ -7,7 +7,7 @@
 //
 
 import XCTest
-import KSSCore
+@testable import KSSFoundation
 
 class ArrayExtensionTests: XCTestCase {
 
