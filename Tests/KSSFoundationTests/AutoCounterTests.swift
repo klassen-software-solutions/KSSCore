@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import KSSFoundation
+import KSSFoundation
 
 
 class AutoCounterTests: XCTestCase {

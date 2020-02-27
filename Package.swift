@@ -16,5 +16,6 @@ let package = Package(
         .target(name: "KSSCocoa", dependencies: ["KSSFoundation"]),
         .target(name: "KSSUI", dependencies: ["KSSFoundation"]),
         .testTarget(name: "KSSFoundationTests", dependencies: ["KSSFoundation"]),
+        .testTarget(name: "KSSUITests", dependencies: ["KSSUI"]),
     ]
 )

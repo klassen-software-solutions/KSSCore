@@ -44,6 +44,7 @@ public struct KSSNativeButton: NSViewRepresentable {
                 action: @escaping () -> Void)
     {
         self.title = title
+        self.attributedTitle = nil
         self.keyEquivalent = keyEquivalent
         self.action = action
     }
@@ -56,10 +57,11 @@ public struct KSSNativeButton: NSViewRepresentable {
      - keyEquivalent: Specifies if this should be the default action of either the escape or return key.
      - action: The action to perform when the button is pressed.
      */
-    public init(_ attributedTitle: NSAttributedString,
+    public init(attributedTitle: NSAttributedString,
                 keyEquivalent: KeyEquivalent? = nil,
                 action: @escaping () -> Void)
     {
+        self.title = nil
         self.attributedTitle = attributedTitle
         self.keyEquivalent = keyEquivalent
         self.action = action

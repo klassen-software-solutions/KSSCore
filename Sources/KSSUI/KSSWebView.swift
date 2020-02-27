@@ -20,6 +20,13 @@ public struct KSSWebView: NSViewRepresentable {
      */
     @Binding public var url: URL
 
+    /**
+     Construct a web view bound to the given url.
+     */
+    public init(url: Binding<URL>) {
+        self._url = url
+    }
+
     /// :nodoc:
     public func makeCoordinator() -> Coordinator {
         Coordinator(self)

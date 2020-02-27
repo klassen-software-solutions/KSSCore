@@ -30,7 +30,7 @@ public struct KSSCommandTextField: NSViewRepresentable {
     /**
      Help text to be displayed in the text field when it is empty.
      */
-    public var helpText: String = "command"
+    public let helpText: String
 
     /**
      Function used to validate the text. Typically this would be set by the `validator` modifier.
@@ -42,6 +42,14 @@ public struct KSSCommandTextField: NSViewRepresentable {
      `errorHighlight` modifier.
      */
     public var errorHighlightColor: NSColor = KSSCommandTextField.defaultErrorHighlightColor
+
+    /**
+     Construct a new text field with the given binding and help text.
+     */
+    public init(command: Binding<String>, helpText: String = "command") {
+        self._command = command
+        self.helpText = helpText
+    }
 
     /**
      Returns a modified View with the validation function set.

@@ -23,26 +23,34 @@ public struct KSSURLTextField: View {
     /**
      The help text to be displayed in the field when it is empty.
      */
-    public var helpText: String = "url"
+    public let helpText: String
 
     /**
      The current validator function. This can be used to validate the URL befgore allowing it to be accepted. For
      example, if you want to limit the acceptable URL to `http:` and `https:`, this is the way to do that.
-     Typically this would be set using the `validator` modifier.
+     This is set using the `validator` modifier.
      */
-    public var validatorFn: ((URL) -> Bool)? = nil
+    public private(set) var validatorFn: ((URL) -> Bool)? = nil
 
     /**
-     The current highlight color used to identify the field when the validation fails. Typically this would be set using
+     The current highlight color used to identify the field when the validation fails. This is set using
      the `errorHighlight` modifier.
      */
-    public var errorHighlightColor: Color = Color(KSSCommandTextField.defaultErrorHighlightColor)
+    public private(set) var errorHighlightColor: Color = Color(KSSCommandTextField.defaultErrorHighlightColor)
 
     static private var nilUrlPublisher = PassthroughSubject<URL?, Never>().eraseToAnyPublisher()
     private var _urlPublisher: AnyPublisher<URL?, Never> = KSSURLTextField.nilUrlPublisher
 
     @State private var errorState: Bool = false
     @State private var text: String = ""
+
+    /**
+     Construct a text field with the given url binding and help text.
+     */
+    public init(url: Binding<URL?>, helpText: String = "url") {
+        self._url = url
+        self.helpText = helpText
+    }
 
     /// :nodoc:
     public var body: some View {

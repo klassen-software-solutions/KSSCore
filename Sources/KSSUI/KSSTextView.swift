@@ -1,20 +1,3 @@
-// Note, this is a modified version of Thiago's code, referenced below. It has been
-// refactored to do the following:
-//  - allow multiple font content instead of just a single font
-//  - adds modifiers such as `editable` and `autoScrollToBottom`
-//  - refactored to allow use outside of a single project
-
-// The following is the copyright from the original. We also reference it in our license
-// list.
-/**
-*  MacEditorTextView
-*  Copyright (c) Thiago Holanda 2020
-*  https://twitter.com/tholanda
-*
-*  MIT license
-*/
-
-
 import Combine
 import SwiftUI
 
@@ -33,16 +16,23 @@ public struct KSSTextView: NSViewRepresentable {
     @Binding public var text: NSMutableAttributedString
 
     /**
-     Used to determine if the control is editable or not. This is typically set using the `editable` modifier.
+     Used to determine if the control is editable or not. This is set using the `editable` modifier.
      */
-    public var isEditable = true
+    public private(set) var isEditable = true
 
     /**
      Used to determine if the control should automatically scroll to the bottom when the text is changed. This
      is intended to be used if your view is one that always appends and saves the developer from having to
-     do this manually. This is typically set using the `autoScrollToBottom` modifier.
+     do this manually. This is set using the `autoScrollToBottom` modifier.
      */
-    public var isAutoScrollToBottom = false
+    public private(set) var isAutoScrollToBottom = false
+
+    /**
+     Construct a new text view with the given binding.
+     */
+    public init(text: Binding<NSMutableAttributedString>) {
+        self._text = text
+    }
 
     /**
      This is a modifier that returns a View with the `isEditable` field changed.
@@ -61,10 +51,6 @@ public struct KSSTextView: NSViewRepresentable {
         newView.isAutoScrollToBottom = true
         return newView
     }
-
-
-    fileprivate var onEditingChanged    : () -> Void = {}
-    fileprivate var onCommit            : () -> Void = {}
 
     /// :nodoc:
     public func makeCoordinator() -> Coordinator {
@@ -107,7 +93,6 @@ extension KSSTextView {
             }
 
             self.parent.text.setAttributedString(textView.textStorage ?? NSAttributedString())
-            self.parent.onEditingChanged()
         }
         
         public func textDidChange(_ notification: Notification) {
@@ -125,7 +110,6 @@ extension KSSTextView {
             }
             
             self.parent.text.setAttributedString(textView.textStorage ?? NSAttributedString())
-            self.parent.onCommit()
         }
     }
 }

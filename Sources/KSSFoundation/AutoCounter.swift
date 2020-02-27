@@ -14,6 +14,11 @@ public class AutoCounter {
     private var nextValue = 1
 
     /**
+     Constructs a counter whose never value will be 1.
+     */
+    public init() {}
+
+    /**
      Returns the next integer from the counter.
      */
     public func next() -> Int {
