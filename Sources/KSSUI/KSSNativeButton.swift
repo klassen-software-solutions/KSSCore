@@ -22,7 +22,10 @@ public struct KSSNativeButton: NSViewRepresentable {
      the escape key.
      */
     public enum KeyEquivalent: String {
+        /// Represents the escape key.
         case escape = "\u{1b}"
+
+        /// Represents the return key.
         case `return` = "\r"
     }
 

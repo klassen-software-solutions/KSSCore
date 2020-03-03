@@ -40,4 +40,48 @@ public extension FileManager {
                                userInfo: [NSLocalizedDescriptionKey: "URL already exists but is not a directory"])
         }
     }
+
+    /**
+     Returns true if the given directory exists and false otherwise.
+     */
+    func directoryExists(at url: URL) -> Bool {
+        precondition(url.scheme == nil || url.scheme == "file",
+                     "The URL \(url.absoluteString) does not reference a file scheme.")
+        return directoryExists(atPath: url.path)
+    }
+
+    /**
+     Returns true if the given directory exists and false otherwise.
+     */
+    func directoryExists(atPath path: String) -> Bool {
+        var isDirectory = ObjCBool(false)
+        if !fileExists(atPath: path, isDirectory: &isDirectory) {
+            return false
+        }
+        return isDirectory.boolValue
+    }
+
+
+    /**
+     Creates a temporary directory that matches the given prefix, and returns a URL that references it.
+
+     - parameters:
+        - withPrefix: A prefix that will be used for the directory name. Note that this is just the prefix
+            of the directory, not the path that leads to the directory.
+     */
+    @available(OSX 10.12, *)
+    func createTemporaryDirectory(withPrefix prefix: String = "temp_") throws -> URL {
+        let directoryName = prefix + UUID().uuidString
+        let url = temporaryDirectory.appendingPathComponent(directoryName, isDirectory: true)
+        try createDirectory(at: url, withIntermediateDirectories: true, attributes: nil)
+        return url
+    }
+
+    /**
+     Returns the attributes of the file at the given URL. This is just a wrapper around `attributesOfItem(atPath)`.
+     */
+    func attributesOfItem(at url: URL) throws -> [FileAttributeKey: Any] {
+        return try attributesOfItem(atPath: url.path)
+    }
+
 }
