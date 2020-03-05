@@ -12,15 +12,26 @@ fileprivate struct MyView: View {
     @State private var testMutableAttributedString = NSMutableAttributedString()
     @State private var url: URL? = nil
     @State private var url2 = URL(string: "http://hello.not.there/")!
+    @State private var testBool: Bool = true
 
     var body: some View {
         VStack {
-            KSSCommandTextField(command: .constant("hi"))
-            KSSCommandTextField(command: .constant("hi"), helpText: "message to send")
-            KSSNativeButton("Hi") { print("hi") }
-            KSSNativeButton(attributedTitle: NSAttributedString()) { print("hi") }
-            KSSTextView(text: $testMutableAttributedString)
-            KSSURLTextField(url: $url)
+            Group {
+                KSSCommandTextField(command: .constant("hi"))
+                KSSCommandTextField(command: .constant("hi"), helpText: "message to send")
+            }
+            Group {
+                KSSNativeButton("Hi") { print("hi") }
+                KSSNativeButton(withAttributedTitle: NSAttributedString()) { print("hi") }
+                KSSNativeButton(withImage: NSImage()) { print("hi") }
+                KSSToggle("Hi", isOn: $testBool)
+                KSSToggle(withAttributedTitle: NSAttributedString(), isOn: $testBool)
+                KSSToggle(withImage: NSImage(), isOn: $testBool)
+            }
+            Group {
+                KSSTextView(text: $testMutableAttributedString)
+                KSSURLTextField(url: $url)
+            }
             KSSWebView(url: $url2)
         }
     }

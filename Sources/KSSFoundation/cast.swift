@@ -20,6 +20,9 @@ public func castAs<T>(_ a: Any) throws -> T {
     throw CastError.castFailed
 }
 
+/**
+ Cast related items that may be thrown.
+ */
 public enum CastError: Error {
     /**
      The error that is thrown by `castAs` if the cast fails.

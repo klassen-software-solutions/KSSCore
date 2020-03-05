@@ -42,4 +42,38 @@ class StringExtensionTests: XCTestCase {
         try! "world".append(to: file)
         XCTAssertEqual(readFile(file), "helloworld")
     }
+
+    let jsonExample = "{ \"one\": 1, \"two\": 2, \"array\": [\"item1\", \"item2\"], \"dict\": { \"hello\": \"world\" } }"
+    let jsonCorrectResults = """
+        {
+          "array" : [
+            "item1",
+            "item2"
+          ],
+          "dict" : {
+            "hello" : "world"
+          },
+          "one" : 1,
+          "two" : 2
+        }
+        """
+
+    let xmlExample = "<someTag withAttribute=\"att1\"><innerTag1>content 1</innerTag1><innerTag2 myatt=\"hi\"/></someTag>"
+    let xmlCorrectResults = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <someTag withAttribute="att1">
+            <innerTag1>content 1</innerTag1>
+            <innerTag2 myatt="hi"></innerTag2>
+        </someTag>
+        """
+
+    let notPPExample = "this string is not pretty printable"
+
+    @available(OSX 10.14, *)
+    func testPrettyPrint() {
+        XCTAssertEqual(jsonExample.prettyPrint(), jsonCorrectResults)
+        XCTAssertEqual(xmlExample.prettyPrint(), xmlCorrectResults)
+        XCTAssertEqual(notPPExample.prettyPrint(), notPPExample)
+    }
+
 }
