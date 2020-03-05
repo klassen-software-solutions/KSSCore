@@ -6,9 +6,9 @@
 //  Copyright © 2017 Klassen Software Solutions. All rights reserved.
 //
 
-import Cocoa
 import Foundation
-
+import Cocoa
+import KSSFoundation
 
 
 public extension NSViewController {
