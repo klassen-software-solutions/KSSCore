@@ -1,0 +1,26 @@
+name: On Push
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest]
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Build
+      if: |
+        !startsWith(github.event.head_commit.message, 'WIP')
+        && !startsWith(github.ref, 'refs/tags/')
+      run: |
+        make
+
+    - name: Run tests
+      if: |
+        !startsWith(github.event.head_commit.message, 'WIP')
+        && !startsWith(github.ref, 'refs/tags/')
+      run: |
+        make make
