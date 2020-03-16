@@ -9,7 +9,6 @@ import KSSUI
 
 @available(OSX 10.15.0, *)
 fileprivate struct MyView: View {
-    @State private var testMutableAttributedString = NSMutableAttributedString()
     @State private var url: URL? = nil
     @State private var url2 = URL(string: "http://hello.not.there/")!
     @State private var testBool: Bool = true
@@ -29,7 +28,6 @@ fileprivate struct MyView: View {
                 KSSToggle(withImage: NSImage(), isOn: $testBool)
             }
             Group {
-                KSSTextView(text: $testMutableAttributedString)
                 KSSURLTextField(url: $url)
             }
             KSSWebView(url: $url2)
