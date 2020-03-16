@@ -21,6 +21,15 @@ public struct KSSTextView: NSViewRepresentable {
     public private(set) var isEditable = true
 
     /**
+     Used to determine if the control will support search and replace. (The replace is based on whether or not
+     `isEditabe` is also true.)
+
+     - note: Turning this on is required for supporting search and replace, but it is not enough. The application
+     must still tie the related menu items to the `performFindPanelAction` of the first responder.
+     */
+    public private(set) var isSearchable = true
+
+    /**
      Used to determine if the control should automatically scroll to the bottom when the text is changed. This
      is intended to be used if your view is one that always appends and saves the developer from having to
      do this manually. This is set using the `autoScrollToBottom` modifier.
@@ -44,7 +53,16 @@ public struct KSSTextView: NSViewRepresentable {
     }
 
     /**
-     This is a modivier that returns a View with the `isAutoScrollToBottom` field changed.
+     This is a modifier that returns a View with the `isSearchable` field changed.
+     */
+    public func searchable(_ isSearchable: Bool) -> KSSTextView {
+        var newView = self
+        newView.isSearchable = isSearchable
+        return newView
+    }
+
+    /**
+     This is a modifier that returns a View with the `isAutoScrollToBottom` field changed.
      */
     public func autoScrollToBottom() -> KSSTextView {
         var newView = self
@@ -61,6 +79,7 @@ public struct KSSTextView: NSViewRepresentable {
     public func makeNSView(context: Context) -> CustomTextView {
         let textView = CustomTextView(text: self.text,
                                       isEditable: self.isEditable,
+                                      isSearchable: self.isSearchable,
                                       isAutoScrollToBottom: self.isAutoScrollToBottom)
         textView.delegate = context.coordinator
         
@@ -119,6 +138,7 @@ extension KSSTextView {
 @available(OSX 10.15, *)
 public final class CustomTextView: NSView {
     private let isEditable: Bool
+    private let isSearchable: Bool
     private let isAutoScrollToBottom: Bool
 
     weak var delegate: NSTextViewDelegate?
@@ -153,7 +173,6 @@ public final class CustomTextView: NSView {
         scrollView.hasHorizontalRuler = false
         scrollView.autoresizingMask = [.width, .height]
         scrollView.translatesAutoresizingMaskIntoConstraints = false
-        
         return scrollView
     }()
     
@@ -187,12 +206,17 @@ public final class CustomTextView: NSView {
         textView.maxSize                 = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
         textView.minSize                 = NSSize(width: 0, height: contentSize.height)
         textView.textColor               = NSColor.labelColor
-    
+        textView.usesFindBar             = self.isSearchable
         return textView
     }()
     
-    init(text: NSMutableAttributedString, isEditable: Bool, isAutoScrollToBottom: Bool) {
+    init(text: NSMutableAttributedString,
+         isEditable: Bool,
+         isSearchable: Bool,
+         isAutoScrollToBottom: Bool)
+    {
         self.isEditable = isEditable
+        self.isSearchable = isSearchable
         self.text = text
         self.isAutoScrollToBottom = isAutoScrollToBottom
 

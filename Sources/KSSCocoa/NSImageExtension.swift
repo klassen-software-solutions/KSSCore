@@ -9,13 +9,27 @@ import os
 import AppKit
 import Foundation
 
-@available(OSX 10.14, *)
 public extension NSImage {
+
+    /**
+     Reads an image from an input stream. Will be nil if there is an error reading the stream or if
+     the stream does not contain a supported image type.
+     */
+    convenience init?(fromInputStream inStream: InputStream) {
+        inStream.open()
+        defer { inStream.close() }
+        if let imageData = try? Data(fromInputStream: inStream) {
+            self.init(data: imageData)
+            return
+        }
+        return nil
+    }
 
     /**
      Performs a color invert of the image and returns the new one. If an error occurs, a message is logged
      and the original image is returned.
      */
+    @available(OSX 10.14, *)
     func inverted() -> NSImage {
         guard let cgImage = self.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
             os_log(.error, "Could not create CGImage from NSImage")
