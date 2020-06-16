@@ -11,6 +11,11 @@ import Foundation
 public extension String {
 
     /**
+     The full range of the string.
+     */
+    var range: NSRange { NSRange(self.startIndex..., in: self) }
+
+    /**
      Appends the string to the end of the file specified by `url`. This version automatically adds
      a newline after the string.
      */
