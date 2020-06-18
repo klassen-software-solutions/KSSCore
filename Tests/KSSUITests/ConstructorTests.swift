@@ -30,7 +30,6 @@ fileprivate struct MyView: View {
             Group {
                 KSSURLTextField(url: $url)
             }
-            KSSWebView(url: $url2)
         }
     }
 }

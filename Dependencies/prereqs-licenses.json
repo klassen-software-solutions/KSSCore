@@ -11,5 +11,10 @@
                 "KSSCore"
             ]
         }
-    ]
+    ],
+    "generated": {
+        "process": "license-scanner",
+        "project": "KSSCore",
+        "time": "2020-06-18T09:37:10.152344-06:00"
+    }
 }

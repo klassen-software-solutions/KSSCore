@@ -167,6 +167,7 @@ protocol KSSNativeButtonCommonHelper {
     var colorScheme: ColorScheme { get }
 }
 
+/// :nodoc:
 @available(OSX 10.15, *)
 extension KSSNativeButtonCommonHelper {
     func commonMakeButton() -> NSButton {
@@ -234,11 +235,13 @@ fileprivate final class ActionTrampoline<T>: NSObject {
     }
 }
 
+/// :nodoc:
 protocol KSSNativeButtonControlActionClosureProtocol: NSObjectProtocol {
     var target: AnyObject? { get set }
     var action: Selector? { get set }
 }
 
+/// :nodoc:
 extension KSSNativeButtonControlActionClosureProtocol {
     func onAction(_ action: @escaping (Self) -> Void) {
         let trampoline = ActionTrampoline(action: action)
@@ -248,4 +251,5 @@ extension KSSNativeButtonControlActionClosureProtocol {
     }
 }
 
+/// :nodoc:
 extension NSControl: KSSNativeButtonControlActionClosureProtocol {}
