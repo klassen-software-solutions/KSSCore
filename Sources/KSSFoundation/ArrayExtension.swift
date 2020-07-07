@@ -12,6 +12,26 @@ import Foundation
 public extension Array {
 
     /**
+     Count the number of items in the array that match the given lambda.
+
+     - returns: The number of matching elements.
+     - parameters:
+        - body: A lambda that takes an element and returns true if the element matches.
+     */
+    func countMatches(_ body: (Element) -> Bool) -> Int {
+        guard !isEmpty else { return 0 }
+
+        var totalMatches = 0
+        forEach { el in
+            if body(el) {
+                totalMatches += 1
+            }
+        }
+        return totalMatches
+    }
+
+    
+    /**
      Remove all the items specified by the index set. Note that all the indices in the
      index set must be valid for the array.
 
