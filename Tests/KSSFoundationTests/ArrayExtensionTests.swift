@@ -11,6 +11,14 @@ import KSSFoundation
 
 class ArrayExtensionTests: XCTestCase {
 
+    func testCountMatches() {
+        let ar = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        XCTAssertEqual(ar.countMatches { el in return (el % 2) == 0 }, 5)
+        XCTAssertEqual(ar.countMatches { el in return (el % 3) == 0 }, 3)
+        XCTAssertEqual(ar.countMatches { el in return el < 0 }, 0)
+        XCTAssertEqual(Array<Int>().countMatches { _ in return true }, 0)
+    }
+
     func testRemove() {
         var ar = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"]
         var removedAr = ar.remove(atIndices: IndexSet([0, 2]))
