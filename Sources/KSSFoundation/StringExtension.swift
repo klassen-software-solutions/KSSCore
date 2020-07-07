@@ -16,6 +16,18 @@ public extension String {
     var range: NSRange { NSRange(self.startIndex..., in: self) }
 
     /**
+     Create a string given the contents of an input stream and its encoding. Note that this will
+     return `nil` if there is an error either in reading from the stream or in the data decoding.
+     */
+    init?(contentsOfStream stream: InputStream, encoding: String.Encoding) {
+        if let data = try? Data(fromInputStream: stream) {
+            self.init(data: data, encoding: encoding)
+        } else {
+            return nil
+        }
+    }
+
+    /**
      Appends the string to the end of the file specified by `url`. This version automatically adds
      a newline after the string.
      */
