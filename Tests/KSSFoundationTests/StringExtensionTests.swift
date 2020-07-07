@@ -27,6 +27,17 @@ class StringExtensionTests: XCTestCase {
         try! fileManager.removeItem(at: directory!)
     }
 
+    func testInitFromContentsOfStream() throws {
+        var inStream = InputStream(data: "Hello World".data(using: .utf8)!)
+        XCTAssertEqual(String(contentsOfStream: inStream, encoding: .utf8), "Hello World")
+
+        inStream = InputStream(data: "This should not decode in UTF-32".data(using: .utf8)!)
+        XCTAssertNil(String(contentsOfStream: inStream, encoding: .utf32))
+
+        inStream = BadInputStream()
+        XCTAssertNil(String(contentsOfStream: inStream, encoding: .utf8))
+    }
+
     func testRange() throws {
         XCTAssertEqual(String().range, NSRange(location: 0, length: 0))
         XCTAssertEqual("".range, NSRange(location: 0, length: 0))
@@ -82,4 +93,21 @@ class StringExtensionTests: XCTestCase {
         XCTAssertEqual(notPPExample.prettyPrint(), notPPExample)
     }
 
+}
+
+
+fileprivate class BadInputStream : InputStream {
+    init() {
+        super.init(data: Data())
+    }
+
+    override func read(_ buffer: UnsafeMutablePointer<UInt8>, maxLength len: Int) -> Int {
+        return -1
+    }
+
+    override var hasBytesAvailable: Bool { true }
+    override var streamError: Error? { NSError(domain: "hi", code: 1, userInfo: nil) }
+
+    override func open() {}
+    override func close() {}
 }
