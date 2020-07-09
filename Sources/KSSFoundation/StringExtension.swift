@@ -5,8 +5,15 @@
 //  Copyright © 2020 Klassen Software Solutions. All rights reserved.
 //
 
-import os
 import Foundation
+
+#if canImport(os)
+    import os
+#endif
+#if canImport(FoundationXML)
+    import FoundationXML
+#endif
+
 
 public extension String {
 
@@ -46,11 +53,13 @@ public extension String {
             if let data = self.data(using: .utf8) {
                 file.write(data)
             } else {
+#if canImport(os)
                 if #available(OSX 10.14, *) {
                     os_log(.error, "Could not convert string to UTF8 data")
                 } else {
                     // Will quietly ignore the problem on older OS versions.
                 }
+#endif
             }
         } else {
             try self.write(to: url, atomically: true, encoding: .utf8)
@@ -99,7 +108,28 @@ public extension String {
     private func prettyPrintXML() -> String? {
         do {
             let doc = try XMLDocument(xmlString: self)
+#if os(Linux)
+            // The Linux version does not currently handle invalid XML properly. However,
+            // we can check for this by seeing if the root element is nil. This has been
+            // reported at https://bugs.swift.org/browse/SR-13191.
+            if doc.rootElement() == nil {
+                return nil
+            }
+
+            // The Linux version also does not handle text where the encoding has not
+            // been set. So we check for that and set it to a default of utf-8. This is
+            // also a part of https://bugs.swift.org/browse/SR-13191.
+            let encoding = (contains("encoding=") ? getEncoding(fromXml: doc) : .utf8)
+
+            // Finally, the Linux version will not handle any encoding other than utf-8.
+            // (It is listed as unfinished as of Swift 5.2.4.) So if we are attempting
+            // something other than utf-8, we will not pretty print the result.
+            if encoding != .utf8 {
+                return nil
+            }
+#else
             let encoding = getEncoding(fromXml: doc)
+#endif
             let newData = doc.xmlData(options: [.nodePrettyPrint])
             if let newStr = String(data: newData, encoding: encoding) {
                 return newStr
@@ -160,7 +190,11 @@ public extension String {
             return .windowsCP1254
         default:
             // Hope for the best
+#if canImport(os)
             os_log(.error, "Could not recognize encoding of '%s', will try using UTF-8", encodingString)
+#else
+            // Will quietly ignore the problem.
+#endif
             return .utf8
         }
     }

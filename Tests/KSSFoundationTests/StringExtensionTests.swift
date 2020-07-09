@@ -76,6 +76,7 @@ class StringExtensionTests: XCTestCase {
         """
 
     let xmlExample = "<someTag withAttribute=\"att1\"><innerTag1>content 1</innerTag1><innerTag2 myatt=\"hi\"/></someTag>"
+#if os(macOS)
     let xmlCorrectResults = """
         <?xml version="1.0" encoding="UTF-8"?>
         <someTag withAttribute="att1">
@@ -83,6 +84,17 @@ class StringExtensionTests: XCTestCase {
             <innerTag2 myatt="hi"></innerTag2>
         </someTag>
         """
+#else
+    // The Linux version uses less spacing, adds a newline, and converts UTF-8 to utf-8
+    let xmlCorrectResults = """
+        <?xml version="1.0" encoding="utf-8"?>
+        <someTag withAttribute="att1">
+          <innerTag1>content 1</innerTag1>
+          <innerTag2 myatt="hi"></innerTag2>
+        </someTag>
+
+        """
+#endif
 
     let notPPExample = "this string is not pretty printable"
 
