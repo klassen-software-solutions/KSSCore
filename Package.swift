@@ -5,6 +5,9 @@ import PackageDescription
 
 let package = Package(
     name: "KSSCore",
+    platforms: [
+        .macOS(.v10_11)
+    ],
     products: [
         .library(name: "KSSCocoa", targets: ["KSSCocoa"]),
         .library(name: "KSSFoundation", targets: ["KSSFoundation"]),

@@ -25,7 +25,6 @@ public extension MKMapView {
      zoomIn zooms the map in approximately the same amount as a single click on
      the zoom controls. If zooming is not enabled, then this does nothing.
      */
-    @available(OSX 10.11, *)
     func zoomIn() {
         doZoom(0.5)
     }
@@ -34,7 +33,6 @@ public extension MKMapView {
      zoomOut zooms the map out approximately the same amount as a single click on
      the zoom controls. If zooming is not enabled, then this does nothing.
      */
-    @available(OSX 10.11, *)
     func zoomOut() {
         doZoom(2)
     }
@@ -43,7 +41,6 @@ public extension MKMapView {
      snapToNorth rotates the map, if necessary, in order to point it north. If already
      pointing north or if rotations are not enabled, then this does nothing.
      */
-    @available(OSX 10.11, *)
     func snapToNorth() {
         if isRotateEnabled && camera.heading != 0 {
             let c = MKMapCamera(lookingAtCenter: camera.centerCoordinate,
@@ -54,7 +51,6 @@ public extension MKMapView {
         }
     }
 
-    @available(OSX 10.11, *)
     private func doZoom(_ factor: Double) {
         if isZoomEnabled {
             let r = region
