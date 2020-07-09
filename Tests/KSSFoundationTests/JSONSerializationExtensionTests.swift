@@ -20,10 +20,19 @@ private struct MyTest2 {
     var param2 = MyTest()
 }
 
+#if os(macOS)
 private class MyTest3 {
     var param1 = ""
     var param2 = MyTest2()
 }
+#else
+// This Linux version of this will only work on custom classes if they have been
+// explicitly subclassed from NSObject.
+private class MyTest3 : NSObject {
+    var param1 = ""
+    var param2 = MyTest2()
+}
+#endif
 
 private class MyTest4: MyTest3 {
     var param3 = 100
@@ -103,6 +112,5 @@ class JSONSerializationExtensionTests: XCTestCase {
         let data = try! JSONSerialization.data(fromSwiftObject: c, options: [.prettyPrinted])
         let jsonObj = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
         XCTAssert(jsonObj["param1"] as! String == "hello world")
-
     }
 }

@@ -46,9 +46,11 @@ public extension JSONSerialization {
         }
     }
 
+#if os(macOS)
     /**
-     Write JSON data for a generic Swift object to a stream. See the warnings for
-     data:fromSwiftObject.
+     Write JSON data for a generic Swift object to a stream. See the warnings for data:fromSwiftObject.
+
+     - note: This is the macOS version
 
      - parameters:
         - obj: The object to serialize.
@@ -56,8 +58,7 @@ public extension JSONSerialization {
         - options: The JSON writing options.
         - error: An output error.
 
-     - returns:
-     The number of bytes written to the stream, or 0 if an error occurs.
+     - returns: The number of bytes written to the stream, or 0 if an error occurs.
      */
     class func writeSwiftObject(obj: Any,
                                 to: OutputStream,
@@ -81,13 +82,48 @@ public extension JSONSerialization {
             return writeJSONObject(jsonObj!, to: to, options: options, error: error)
         }
     }
+#else
+    /**
+     Write JSON data for a generic Swift object to a stream. See the warnings for data:fromSwiftObject.
+
+     - note: This is the Linux version.
+     - note: For classes to work in the Linux version, they must be manually subclassed from NSObject. If not,
+            you will see an error of the form _Could not cast value of type ... to 'Foundation.NSObject'_.
+
+     - parameters:
+        - obj: The object to serialize.
+        - toStream: The stream to which to write. The stream should be opened and configured.
+        - options: The JSON writing options.
+
+     - returns: The number of bytes written to the stream, or 0 if an error occurs.
+     */
+    class func writeSwiftObject(obj: Any,
+                                toStream: OutputStream,
+                                options: JSONSerialization.WritingOptions = []) throws -> Int
+    {
+        if isValidJSONObject(obj) {
+            return try writeJSONObject(obj, toStream: toStream, options: options)
+        }
+        else {
+            let jsonObj = try toJSONObject(fromSwiftObject: obj)
+            return try writeJSONObject(jsonObj, toStream: toStream, options: options)
+        }
+    }
+#endif
 
     // MARK: private implementation
 
     // Throw an exception indicating we could not convert the object to JSON.
     private class func generateError(_ msg: String) -> NSError {
-        return NSError.init(domain: NSPOSIXErrorDomain, code: kPOSIXErrorEINVAL,
-                            userInfo: [NSLocalizedDescriptionKey: msg])
+#if os(macOS)
+        return NSError(domain: NSPOSIXErrorDomain,
+                       code: kPOSIXErrorEINVAL,
+                       userInfo: [NSLocalizedDescriptionKey: msg])
+#else
+        return NSError(domain: NSCocoaErrorDomain,
+                       code: CocoaError.propertyListReadCorrupt.rawValue,
+                       userInfo: [NSDebugDescriptionErrorKey : msg])
+#endif
     }
 
     // Recursive method to generate an object that will work with JSONSerialization.
