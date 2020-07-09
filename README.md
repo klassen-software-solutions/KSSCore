@@ -4,8 +4,8 @@ Miscellaneous Swift utilities
 ## Description
 
 This package is divided into a number of Swift Modules providing utility methods related to both
-UI and non-UI classes. At present the UI is only supported on macOS and the non-UI items are
-supported on both macOS and Linux.
+UI and non-UI classes. At present only _KSSFoundation_ is available on both Mac and Linux. The
+remaining modules are only available on Mac.
 
 The modules provided by this package are the following:
 

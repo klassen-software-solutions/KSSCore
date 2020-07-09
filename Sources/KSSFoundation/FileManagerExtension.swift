@@ -35,9 +35,15 @@ public extension FileManager {
                                 attributes: attributes)
         }
         else if !isDirectory.boolValue {
-            throw NSError.init(domain: NSPOSIXErrorDomain,
+#if os(macOS)
+            throw NSError(domain: NSPOSIXErrorDomain,
                                code: kPOSIXErrorEEXIST,
                                userInfo: [NSLocalizedDescriptionKey: "URL already exists but is not a directory"])
+#else
+            throw NSError(domain: NSCocoaErrorDomain,
+                          code: CocoaError.propertyListReadCorrupt.rawValue,
+                          userInfo: [NSDebugDescriptionErrorKey : "URL already exists but is not a directory"])
+#endif
         }
     }
 
