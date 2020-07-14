@@ -108,6 +108,16 @@ public extension String {
     private func prettyPrintXML() -> String? {
         do {
             let doc = try XMLDocument(xmlString: self)
+
+#if os(macOS)
+            // The Mac implementation incorrectly defaults isStandalone to true even when
+            // there is no DTD specified (in which case isStandalone should always
+            // be false).
+            if doc.isStandalone && doc.dtd == nil {
+                doc.isStandalone = false
+            }
+#endif
+
 #if os(Linux)
             // The Linux version does not currently handle invalid XML properly. However,
             // we can check for this by seeing if the root element is nil. This has been
@@ -130,6 +140,7 @@ public extension String {
 #else
             let encoding = getEncoding(fromXml: doc)
 #endif
+
             let newData = doc.xmlData(options: [.nodePrettyPrint])
             if let newStr = String(data: newData, encoding: encoding) {
                 return newStr
