@@ -103,6 +103,9 @@ class StringExtensionTests: XCTestCase {
         XCTAssertEqual(jsonExample.prettyPrint(), jsonCorrectResults)
         XCTAssertEqual(xmlExample.prettyPrint(), xmlCorrectResults)
         XCTAssertEqual(notPPExample.prettyPrint(), notPPExample)
+
+        // Test for bug #30. Pretty printing xmlCorrectResults should produce itself.
+        XCTAssertEqual(xmlCorrectResults.prettyPrint(), xmlCorrectResults)
     }
 
 }
