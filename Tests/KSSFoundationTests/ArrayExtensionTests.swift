@@ -82,4 +82,15 @@ class ArrayExtensionTests: XCTestCase {
         XCTAssertEqual(ar, ["ccc", "bbb", "aab", "aab", "aaa"])
     }
 
+    func testAreAllEqual() throws {
+        XCTAssertTrue([1, 1, 1, 1].allAreEqual)
+        XCTAssertTrue(Array<Int>().allAreEqual)
+        XCTAssertTrue(["one", "one", "one"].allAreEqual)
+        XCTAssertTrue([Int]().allAreEqual)
+        XCTAssertTrue([1].allAreEqual)
+
+        XCTAssertFalse([1, 2, 1].allAreEqual)
+        XCTAssertFalse(["one", "two", "one"].allAreEqual)
+    }
+
 }
