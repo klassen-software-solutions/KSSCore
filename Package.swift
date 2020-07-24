@@ -11,6 +11,7 @@ let package = Package(
     products: {
         var products: [Product] = [
             .library(name: "KSSFoundation", targets: ["KSSFoundation"]),
+            .library(name: "KSSTest", targets: ["KSSTest"]),
         ]
 #if os(macOS)
         products.append(contentsOf: [
@@ -26,7 +27,9 @@ let package = Package(
     targets: {
         var targets: [Target] = [
             .target(name: "KSSFoundation", dependencies: []),
+            .target(name: "KSSTest", dependencies: []),
             .testTarget(name: "KSSFoundationTests", dependencies: ["KSSFoundation"]),
+            .testTarget(name: "KSSTestTests", dependencies: ["KSSTest"]),
         ]
 #if os(macOS)
         targets.append(contentsOf: [
