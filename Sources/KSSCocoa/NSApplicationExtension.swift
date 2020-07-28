@@ -62,4 +62,19 @@ public extension NSApplication {
                                               withIntermediateDirectories: true)
         return applicationDirectoryURL
     }
+
+    /**
+     Returns true if the current appearance is a dark mode appearance.
+     */
+    var isDarkMode: Bool {
+        if #available(OSX 10.15, *) {
+            let appearanceDescription = effectiveAppearance.debugDescription.lowercased()
+            return appearanceDescription.contains("dark")
+        } else {
+            if let appleInterfaceStyle = UserDefaults.standard.object(forKey: "AppleInterfaceStyle") as? String {
+                return appleInterfaceStyle.lowercased().contains("dark")
+            }
+            return false
+        }
+    }
 }
