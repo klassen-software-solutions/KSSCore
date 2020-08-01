@@ -29,6 +29,7 @@ fileprivate struct MyView: View {
             }
             Group {
                 KSSURLTextField(url: $url)
+                KSSSearchField()
             }
         }
     }
@@ -38,5 +39,17 @@ class ConstructorTests: XCTestCase {
     func testObjectWillCompile() {
         // Intentionally empty. This file tests that the UI controls can be included
         // in a view. It is a compile, not a runtime, test.
+    }
+
+    func testKSSSearchField() {
+        var sf = KSSSearchField()
+        XCTAssertEqual(sf.helpText, "")
+        XCTAssertEqual(sf.recentSearchesKey, "")
+        XCTAssertNil(sf.searchCallback)
+
+        sf = KSSSearchField(helpText: "hello", recentSearchesKey: "world") { text in }
+        XCTAssertEqual(sf.helpText, "hello")
+        XCTAssertEqual(sf.recentSearchesKey, "world")
+        XCTAssertNotNil(sf.searchCallback)
     }
 }
