@@ -23,6 +23,9 @@ public struct KSSNativeButton: NSViewRepresentable, KSSNativeButtonCommonHelper 
 
     @Environment(\.colorScheme) var colorScheme: ColorScheme
 
+    /// Settings applicable to all KSS `NSControl` based Views.
+    public var nsControlViewSettings = KSSNSControlViewSettings()
+
     /**
      Used to specify a keyboard equivalent to the button action. This can either refer to the return key or
      the escape key.
@@ -141,19 +144,23 @@ public struct KSSNativeButton: NSViewRepresentable, KSSNativeButtonCommonHelper 
         if let keyEquivalent = keyEquivalent {
             button.keyEquivalent = keyEquivalent.rawValue
         }
+        _ = applyNSControlViewSettings(button, context: context)
         return button
     }
 
     /// :nodoc:
     public func updateNSView(_ button: NSButton, context: NSViewRepresentableContext<Self>) {
-        commonUpdateButton(button)
+        DispatchQueue.main.async {
+            self.commonUpdateButton(button)
+            _ = self.applyNSControlViewSettings(button, context: context)
+        }
     }
 }
 
 // The following are helper items used to reduce the amount of repeated code between
 // the various KSS "native" buttons.
 @available(OSX 10.15, *)
-protocol KSSNativeButtonCommonHelper {
+protocol KSSNativeButtonCommonHelper : KSSNSControlViewSettable {
     var title: String? { get }
     var attributedTitle: NSAttributedString? { get }
     var image: NSImage? { get }

@@ -20,7 +20,10 @@ import SwiftUI
  - Automatic highlighting of errors.
  */
 @available(OSX 10.15, *)
-public struct KSSCommandTextField: NSViewRepresentable {
+public struct KSSCommandTextField: NSViewRepresentable, KSSNSControlViewSettable {
+    /// Settings applicable to all KSS `NSControl` based Views.
+    public var nsControlViewSettings = KSSNSControlViewSettings()
+
     /**
      Binding to the text of the current command. This will be updated when the user presses the `Return`
      or `Enter` keys.
@@ -86,12 +89,15 @@ public struct KSSCommandTextField: NSViewRepresentable {
         textField.placeholderString = helpText
         textField.delegate = context.coordinator
         textField.stringValue = command
+        _ = applyNSControlViewSettings(textField, context: context)
         return textField
     }
 
     /// :nodoc:
-    public func updateNSView(_ nsView: NSTextField, context: Context) {
-        // Intentionally left empty
+    public func updateNSView(_ textField: NSTextField, context: Context) {
+        DispatchQueue.main.async {
+            _ = self.applyNSControlViewSettings(textField, context: context)
+        }
     }
 
     // I don't like this. I would prefer having an "errorState" variable like I do with

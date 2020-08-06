@@ -10,7 +10,11 @@ import SwiftUI
 /**
  Provides a SwiftUI view based on an NSSearchField.
  */
-public struct KSSSearchField: NSViewRepresentable {
+@available(OSX 10.15, *)
+public struct KSSSearchField: NSViewRepresentable, KSSNSControlViewSettable {
+    /// Settings applicable to all KSS `NSControl` based Views.
+    public var nsControlViewSettings = KSSNSControlViewSettings()
+
     /// Type used for the search callback.
     public typealias Callback = (String?)->Void
 
@@ -25,6 +29,7 @@ public struct KSSSearchField: NSViewRepresentable {
     /// which will be non-nil and non-empty when there is something to search for, and will be nil
     /// when the search is to be stopped.
     public let searchCallback: Callback?
+
 
     /**
      Create a search field. The field is essentially a text field where the user can type a search, an optional
@@ -68,12 +73,15 @@ public struct KSSSearchField: NSViewRepresentable {
             searchField.addRecentsMenu()
         }
         searchField.delegate = context.coordinator
+        _ = applyNSControlViewSettings(searchField, context: context)
         return searchField
     }
 
     /// :nodoc:  Required part of the `NSViewRepresentable` protocol.
-    public func updateNSView(_ nsView: NSSearchField, context: Context) {
-        // Intentionally empty
+    public func updateNSView(_ searchField: NSSearchField, context: Context) {
+        DispatchQueue.main.async {
+            _ = self.applyNSControlViewSettings(searchField, context: context)
+        }
     }
 }
 
@@ -96,6 +104,7 @@ fileprivate extension NSMenu {
 }
 
 /// :nodoc:  Required part of the `NSViewRepresentable` protocol.
+@available(OSX 10.15, *)
 extension KSSSearchField {
     public class Coordinator: NSObject, NSSearchFieldDelegate, NSTextFieldDelegate {
         let owner: KSSSearchField

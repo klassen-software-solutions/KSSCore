@@ -10,12 +10,15 @@ import SwiftUI
 
 /**
  SwiftUI wrapper around an NSButton configured to act as a toggle. This is intended to be used when
- the SwiftUI `Toggle` is not sufficient, for example, when you wish to use a multi-font strong or
+ the SwiftUI `Toggle` is not sufficient, for example, when you wish to use a multi-font string or
  a tool tip.
  */
 @available(OSX 10.15, *)
 public struct KSSToggle: NSViewRepresentable, KSSNativeButtonCommonHelper {
     @Environment(\.colorScheme) var colorScheme: ColorScheme
+
+    /// Settings applicable to all KSS `NSControl` based Views.
+    public var nsControlViewSettings = KSSNSControlViewSettings()
 
     /// Specifies a simple string as the content of the button.
     public private(set) var title: String? = nil
@@ -97,15 +100,19 @@ public struct KSSToggle: NSViewRepresentable, KSSNativeButtonCommonHelper {
     public func makeNSView(context: NSViewRepresentableContext<Self>) -> NSButton {
         let button = commonMakeButton()
         button.onAction { _ in self.isOn = !self.isOn }
+        _ = applyNSControlViewSettings(button, context: context)
         return button
     }
 
     /// :nodoc:
-    public func updateNSView(_ nsView: NSButton, context: NSViewRepresentableContext<Self>) {
-        commonUpdateButton(nsView)
-        nsView.state = isOn ? .on : .off
-        if nsView.alternateImage == nil {
-            nsView.alphaValue = isOn ? 1.0 : 0.8
+    public func updateNSView(_ button: NSButton, context: NSViewRepresentableContext<Self>) {
+        DispatchQueue.main.async {
+            self.commonUpdateButton(button)
+            _ = self.applyNSControlViewSettings(button, context: context)
+            button.state = self.isOn ? .on : .off
+            if button.alternateImage == nil {
+                button.alphaValue = self.isOn ? 1.0 : 0.8
+            }
         }
     }
 }
