@@ -25,6 +25,11 @@ class KSSNativeButtonTests: XCTestCase {
                                 toolTip: "this is a tooltip") { print("button 2") }
                     .nsFont(NSFont.systemFont(ofSize: 10))
                     .nsFontSize(12)
+                KSSNativeButton("button 3") { print("button 3") }
+                    .nsFont(NSFont.systemFont(ofSize: 10))
+                    .nsFontSize(12)
+                    .nsIsBordered(true)
+                    .nsToolTip("this is a tooltip")
             }
         }
     }
@@ -35,13 +40,9 @@ class KSSNativeButtonTests: XCTestCase {
         XCTAssertEqual(button.title, "button")
         XCTAssertNil(button.attributedTitle)
         XCTAssertNil(button.image)
-        XCTAssertNil(button.alternateImage)
         XCTAssertNil(button.keyEquivalent)
         XCTAssertNil(button.buttonType)
         XCTAssertNil(button.bezelStyle)
-        XCTAssertNil(button.isBordered)
-        XCTAssertNil(button.toolTip)
-        XCTAssertTrue(button.autoInvertImage)
 
         button = KSSNativeButton("button",
                                  keyEquivalent: .return,
@@ -64,13 +65,9 @@ class KSSNativeButtonTests: XCTestCase {
         XCTAssertNil(button.title)
         XCTAssertEqual(button.attributedTitle, NSAttributedString(string: "button"))
         XCTAssertNil(button.image)
-        XCTAssertNil(button.alternateImage)
         XCTAssertNil(button.keyEquivalent)
         XCTAssertNil(button.buttonType)
         XCTAssertNil(button.bezelStyle)
-        XCTAssertNil(button.isBordered)
-        XCTAssertNil(button.toolTip)
-        XCTAssertTrue(button.autoInvertImage)
 
         button = KSSNativeButton(withAttributedTitle: NSAttributedString(string: "button"),
                                  keyEquivalent: .return,
@@ -93,13 +90,9 @@ class KSSNativeButtonTests: XCTestCase {
         XCTAssertNil(button.title)
         XCTAssertNil(button.attributedTitle)
         XCTAssertNotNil(button.image)
-        XCTAssertNil(button.alternateImage)
         XCTAssertNil(button.keyEquivalent)
         XCTAssertNil(button.buttonType)
         XCTAssertNil(button.bezelStyle)
-        XCTAssertNil(button.isBordered)
-        XCTAssertNil(button.toolTip)
-        XCTAssertTrue(button.autoInvertImage)
 
         button = KSSNativeButton(withImage: NSImage(),
                                  alternateImage: NSImage(),
@@ -133,5 +126,39 @@ class KSSNativeButtonTests: XCTestCase {
         button = button.nsFontSize(10)
         XCTAssertNotNil(button.nsControlViewSettings.font)
         XCTAssertEqual(button.nsControlViewSettings.fontSize, 10)
+    }
+
+    func testNSButtonModifiers() {
+        var button = KSSNativeButton("button") { print("hi") }
+        XCTAssertNil(button.nsButtonViewSettings.alternateImage)
+        XCTAssertTrue(button.nsButtonViewSettings.autoInvertImage)
+        XCTAssertNil(button.nsButtonViewSettings.isBordered)
+        XCTAssertNil(button.nsButtonViewSettings.showsBorderOnlyWhileMouseInside)
+        XCTAssertNil(button.nsButtonViewSettings.toolTip)
+
+        button = button.nsAlternateImage(NSImage())
+            .nsAutoInvertImage(false)
+            .nsIsBordered(true)
+            .nsShowsBorderOnlyWhileMouseInside(true)
+            .nsToolTip("tooltip")
+        XCTAssertNotNil(button.nsButtonViewSettings.alternateImage)
+        XCTAssertFalse(button.nsButtonViewSettings.autoInvertImage)
+        XCTAssertTrue(button.nsButtonViewSettings.isBordered!)
+        XCTAssertTrue(button.nsButtonViewSettings.showsBorderOnlyWhileMouseInside!)
+        XCTAssertEqual(button.nsButtonViewSettings.toolTip, "tooltip")
+    }
+
+    func testKSSNativeButtonModifiers() {
+        var button = KSSNativeButton("button") { print("hi") }
+        XCTAssertNil(button.keyEquivalent)
+        XCTAssertNil(button.buttonType)
+        XCTAssertNil(button.bezelStyle)
+
+        button = button.nsKeyEquivalent(.escape)
+            .nsButtonType(.momentaryLight)
+            .nsBezelStyle(.disclosure)
+        XCTAssertEqual(button.keyEquivalent, .escape)
+        XCTAssertEqual(button.buttonType, .momentaryLight)
+        XCTAssertEqual(button.bezelStyle, .disclosure)
     }
 }

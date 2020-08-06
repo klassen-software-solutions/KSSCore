@@ -15,10 +15,11 @@ import SwiftUI
  */
 @available(OSX 10.15, *)
 public struct KSSToggle: NSViewRepresentable, KSSNativeButtonCommonHelper {
-    @Environment(\.colorScheme) var colorScheme: ColorScheme
-
     /// Settings applicable to all KSS `NSControl` based Views.
     public var nsControlViewSettings = KSSNSControlViewSettings()
+
+    /// Settings applicable to all KSS `NSButton` based Views.
+    public var nsButtonViewSettings = KSSNSButtonViewSettings()
 
     /// Specifies a simple string as the content of the button.
     public private(set) var title: String? = nil
@@ -35,17 +36,21 @@ public struct KSSToggle: NSViewRepresentable, KSSNativeButtonCommonHelper {
 
     /// Specifies an alternate image to be displayed when the button is activated. Note that the appearance
     /// of the image may be modified if `autoInvertImage` is specified.
-    public private(set) var alternateImage: NSImage? = nil
+    @available(*, deprecated, message: "Use nsButtonViewSettings.alternateImage")
+    public var alternateImage: NSImage? { nsButtonViewSettings.alternateImage }
 
     /// If set to true, and if `image` or `alternateImage` exist, they will have their colors automatically
     /// inverted when we are displaying in "dark mode". This is most useful if they are monochrome images.
-    public private(set) var autoInvertImage: Bool = true
+    @available(*, deprecated, message: "Use nsButtonViewSettings.autoInvertImage")
+    public var autoInvertImage: Bool { nsButtonViewSettings.autoInvertImage }
 
     /// Allows the border to be turned on/off.
-    public private(set) var isBordered: Bool? = nil
+    @available(*, deprecated, message: "Use nsButtonViewSettings.isBordered")
+    public var isBordered: Bool? { nsButtonViewSettings.isBordered }
 
     /// Allows a tool tip to be displayed if the cursor hovers over the control for a few moments.
-    public private(set) var toolTip: String? = nil
+    @available(*, deprecated, message: "Use nsButtonViewSettings.toolTip")
+    public var toolTip: String? { nsButtonViewSettings.toolTip }
 
     let buttonType: NSButton.ButtonType? = .pushOnPushOff
     let bezelStyle: NSButton.BezelStyle? = .regularSquare
@@ -53,34 +58,59 @@ public struct KSSToggle: NSViewRepresentable, KSSNativeButtonCommonHelper {
     /**
      Construct a button with a simple string.
      */
+    public init(_ title: String, isOn: Binding<Bool>) {
+        self.title = title
+        self._isOn = isOn
+    }
+
+    /**
+     Construct a button with a simple string.
+     */
+    @available(*, deprecated, message: "Use init(_, isOn:) plus modifiers")
     public init(_ title: String,
                 isOn: Binding<Bool>,
                 isBordered: Bool? = nil,
                 toolTip: String? = nil)
     {
-        self.title = title
-        self._isOn = isOn
-        self.isBordered = isBordered
-        self.toolTip = toolTip
+        self.init(title, isOn: isOn)
+        self.nsButtonViewSettings.isBordered = isBordered
+        self.nsButtonViewSettings.toolTip = toolTip
     }
 
     /**
      Construct a button with an attributed string.
      */
+    public init(withAttributedTitle attributedTitle: NSAttributedString, isOn: Binding<Bool>) {
+        self.attributedTitle = attributedTitle
+        self._isOn = isOn
+    }
+
+    /**
+     Construct a button with an attributed string.
+     */
+    @available(*, deprecated, message: "Use init(withAttributedTitle:, isOn:) plus modifiers")
     public init(withAttributedTitle attributedTitle: NSAttributedString,
                 isOn: Binding<Bool>,
                 isBordered: Bool? = nil,
                 toolTip: String? = nil)
     {
-        self.attributedTitle = attributedTitle
-        self._isOn = isOn
-        self.isBordered = isBordered
-        self.toolTip = toolTip
+        self.init(withAttributedTitle: attributedTitle, isOn: isOn)
+        self.nsButtonViewSettings.isBordered = isBordered
+        self.nsButtonViewSettings.toolTip = toolTip
     }
 
     /**
      Construct a button with an image.
      */
+    public init(withImage image: NSImage, isOn: Binding<Bool>) {
+        self.image = image
+        self._isOn = isOn
+    }
+
+    /**
+     Construct a button with an image.
+     */
+    @available(*, deprecated, message: "Use init(withImage:, isOn:) plus modifiers")
     public init(withImage image: NSImage,
                 isOn: Binding<Bool>,
                 alternateImage: NSImage? = nil,
@@ -88,27 +118,24 @@ public struct KSSToggle: NSViewRepresentable, KSSNativeButtonCommonHelper {
                 isBordered: Bool? = nil,
                 toolTip: String? = nil)
     {
-        self.image = image
-        self.alternateImage = alternateImage
-        self.autoInvertImage = autoInvertImage
-        self._isOn = isOn
-        self.isBordered = isBordered
-        self.toolTip = toolTip
+        self.init(withImage: image, isOn: isOn)
+        self.nsButtonViewSettings.alternateImage = alternateImage
+        self.nsButtonViewSettings.autoInvertImage = autoInvertImage
+        self.nsButtonViewSettings.isBordered = isBordered
+        self.nsButtonViewSettings.toolTip = toolTip
     }
 
     /// :nodoc:
     public func makeNSView(context: NSViewRepresentableContext<Self>) -> NSButton {
-        let button = commonMakeButton()
+        let button = commonMakeButton(context: context)
         button.onAction { _ in self.isOn = !self.isOn }
-        _ = applyNSControlViewSettings(button, context: context)
         return button
     }
 
     /// :nodoc:
     public func updateNSView(_ button: NSButton, context: NSViewRepresentableContext<Self>) {
         DispatchQueue.main.async {
-            self.commonUpdateButton(button)
-            _ = self.applyNSControlViewSettings(button, context: context)
+            self.commonUpdateButton(button, context: context)
             button.state = self.isOn ? .on : .off
             if button.alternateImage == nil {
                 button.alphaValue = self.isOn ? 1.0 : 0.8

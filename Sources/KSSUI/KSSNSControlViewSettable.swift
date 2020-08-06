@@ -1,9 +1,8 @@
 //
 //  KSSNSControlViewSettable.swift
-//  HTTPMonitor
 //
 //  Created by Steven W. Klassen on 2020-08-02.
-//  Copyright © 2020 Ebed Technologies Ltd. All rights reserved.
+//  Copyright © 2020 Klassen Software Solutions. All rights reserved.
 //
 
 import os
@@ -72,6 +71,7 @@ public extension KSSNSControlViewSettable {
     }
 }
 
+// MARK: NSControl View Modifiers
 
 @available(OSX 10.15, *)
 public extension NSViewRepresentable {

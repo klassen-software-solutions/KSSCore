@@ -5,6 +5,7 @@
 //  Copyright © 2020 Klassen Software Solutions. All rights reserved.
 //
 
+import os
 import SwiftUI
 import KSSCocoa
 
@@ -21,10 +22,11 @@ import KSSCocoa
 @available(OSX 10.15, *)
 public struct KSSNativeButton: NSViewRepresentable, KSSNativeButtonCommonHelper {
 
-    @Environment(\.colorScheme) var colorScheme: ColorScheme
-
     /// Settings applicable to all KSS `NSControl` based Views.
     public var nsControlViewSettings = KSSNSControlViewSettings()
+
+    /// Settings applicable to all KSS `NSButton` based Views.
+    public var nsButtonViewSettings = KSSNSButtonViewSettings()
 
     /**
      Used to specify a keyboard equivalent to the button action. This can either refer to the return key or
@@ -49,33 +51,46 @@ public struct KSSNativeButton: NSViewRepresentable, KSSNativeButtonCommonHelper 
     public private(set) var image: NSImage? = nil
 
     /// Specifies a keyboard equivalent to pressing the button.
-    public private(set) var keyEquivalent: KeyEquivalent? = nil
+    public var keyEquivalent: KeyEquivalent? = nil
 
     /// Specifies the type of the button.
-    public private(set) var buttonType: NSButton.ButtonType? = nil
+    public var buttonType: NSButton.ButtonType? = nil
 
     /// Specifies an alternate image to be displayed when the button is activated. Note that the appearance
     /// of the image may be modified if `autoInvertImage` is specified.
-    public private(set) var alternateImage: NSImage? = nil
+    @available(*, deprecated, message: "Use nsButtonViewSettings.alternateImage")
+    public var alternateImage: NSImage? { nsButtonViewSettings.alternateImage }
 
     /// Specifies type type of border.
-    public private(set) var bezelStyle: NSButton.BezelStyle? = nil
+    public var bezelStyle: NSButton.BezelStyle? = nil
 
     /// Allows the border to be turned on/off.
-    public private(set) var isBordered: Bool? = nil
+    @available(*, deprecated, message: "Use nsButtonViewSettings.isBordered")
+    public var isBordered: Bool? { nsButtonViewSettings.isBordered }
 
     /// If set to true, and if `image` or `alternateImage` exist, they will have their colors automatically
     /// inverted when we are displaying in "dark mode". This is most useful if they are monochrome images.
-    public private(set) var autoInvertImage: Bool = true
+    @available(*, deprecated, message: "Use nsButtonViewSettings.autoInvertImage")
+    public var autoInvertImage: Bool { nsButtonViewSettings.autoInvertImage }
 
     /// Allows a tool tip to be displayed if the cursor hovers over the control for a few moments.
-    public private(set) var toolTip: String? = nil
+    @available(*, deprecated, message: "Use nsButtonViewSettings.toolTip")
+    public var toolTip: String? { nsButtonViewSettings.toolTip }
 
     private let action: () -> Void
 
     /**
      Construct a button with a simple string.
      */
+    public init(_ title: String, action: @escaping () -> Void) {
+        self.title = title
+        self.action = action
+    }
+
+    /**
+     Construct a button with a simple string.
+     */
+    @available(*, deprecated, message: "Use init(_, action:) plus modifiers")
     public init(_ title: String,
                 keyEquivalent: KeyEquivalent? = nil,
                 buttonType: NSButton.ButtonType? = nil,
@@ -84,18 +99,26 @@ public struct KSSNativeButton: NSViewRepresentable, KSSNativeButtonCommonHelper 
                 toolTip: String? = nil,
                 action: @escaping () -> Void)
     {
-        self.title = title
+        self.init(title, action: action)
         self.keyEquivalent = keyEquivalent
         self.buttonType = buttonType
         self.bezelStyle = bezelStyle
-        self.isBordered = isBordered
-        self.toolTip = toolTip
+        self.nsButtonViewSettings.isBordered = isBordered
+        self.nsButtonViewSettings.toolTip = toolTip
+    }
+
+    /**
+     Construct a button with an attributed string.
+     */
+    public init(withAttributedTitle attributedTitle: NSAttributedString, action: @escaping () -> Void) {
+        self.attributedTitle = attributedTitle
         self.action = action
     }
 
     /**
      Construct a button with an attributed string.
      */
+    @available(*, deprecated, message: "Use init(withAttributedTitle:, action:) plus modifiers")
     public init(withAttributedTitle attributedTitle: NSAttributedString,
                 keyEquivalent: KeyEquivalent? = nil,
                 buttonType: NSButton.ButtonType? = nil,
@@ -104,18 +127,26 @@ public struct KSSNativeButton: NSViewRepresentable, KSSNativeButtonCommonHelper 
                 toolTip: String? = nil,
                 action: @escaping () -> Void)
     {
-        self.attributedTitle = attributedTitle
+        self.init(withAttributedTitle: attributedTitle, action: action)
         self.keyEquivalent = keyEquivalent
         self.buttonType = buttonType
         self.bezelStyle = bezelStyle
-        self.isBordered = isBordered
-        self.toolTip = toolTip
+        self.nsButtonViewSettings.isBordered = isBordered
+        self.nsButtonViewSettings.toolTip = toolTip
+    }
+
+    /**
+     Construct a button with an image.
+     */
+    public init(withImage image: NSImage, action: @escaping () -> Void) {
+        self.image = image
         self.action = action
     }
 
     /**
      Construct a button with an image.
      */
+    @available(*, deprecated, message: "Use init(withImage:, action:) plus modifiers")
     public init(withImage image: NSImage,
                 alternateImage: NSImage? = nil,
                 autoInvertImage: Bool = true,
@@ -126,58 +157,100 @@ public struct KSSNativeButton: NSViewRepresentable, KSSNativeButtonCommonHelper 
                 toolTip: String? = nil,
                 action: @escaping () -> Void)
     {
-        self.image = image
-        self.alternateImage = alternateImage
-        self.autoInvertImage = autoInvertImage
+        self.init(withImage: image, action: action)
+        self.nsButtonViewSettings.alternateImage = alternateImage
+        self.nsButtonViewSettings.autoInvertImage = autoInvertImage
         self.keyEquivalent = keyEquivalent
         self.buttonType = buttonType
         self.bezelStyle = bezelStyle
-        self.isBordered = isBordered
-        self.toolTip = toolTip
-        self.action = action
+        self.nsButtonViewSettings.isBordered = isBordered
+        self.nsButtonViewSettings.toolTip = toolTip
     }
 
     /// :nodoc:
     public func makeNSView(context: NSViewRepresentableContext<Self>) -> NSButton {
-        let button = commonMakeButton()
+        let button = commonMakeButton(context: context)
         button.onAction { _ in self.action() }
         if let keyEquivalent = keyEquivalent {
             button.keyEquivalent = keyEquivalent.rawValue
         }
-        _ = applyNSControlViewSettings(button, context: context)
         return button
     }
 
     /// :nodoc:
     public func updateNSView(_ button: NSButton, context: NSViewRepresentableContext<Self>) {
         DispatchQueue.main.async {
-            self.commonUpdateButton(button)
-            _ = self.applyNSControlViewSettings(button, context: context)
+            self.commonUpdateButton(button, context: context)
         }
     }
 }
 
+// MARK: KSSNativeButton View Modifiers
+
+@available(OSX 10.15, *)
+public extension NSViewRepresentable {
+    /**
+     Sets a key equivalent trigger for the button.
+     - note: If the view is not a `KSSNativeButton` view, then a warning will be logged and no change made.
+     */
+    func nsKeyEquivalent(_ keyEquivalent: KSSNativeButton.KeyEquivalent) -> Self {
+        if var buttonView = self as? KSSNativeButton {
+            buttonView.keyEquivalent = keyEquivalent
+            return buttonView as! Self
+        } else {
+            os_log("Warning: View is not a KSSNativeButton, ignoring key equivalent change")
+        }
+        return self
+    }
+
+    /**
+     Sets the button type.
+     - note: If the view is not a `KSSNativeButton` view, then a warning will be logged and no change made.
+     */
+    func nsButtonType(_ buttonType: NSButton.ButtonType) -> Self {
+        if var buttonView = self as? KSSNativeButton {
+            buttonView.buttonType = buttonType
+            return buttonView as! Self
+        } else {
+            os_log("Warning: View is not a KSSNativeButton, ignoring button type change")
+        }
+        return self
+    }
+
+    /**
+     Sets the bezel style.
+     - note: If the view is not a `KSSNativeButton` view, then a warning will be logged and no change made.
+     */
+    func nsBezelStyle(_ bezelStyle: NSButton.BezelStyle) -> Self {
+        if var buttonView = self as? KSSNativeButton {
+            buttonView.bezelStyle = bezelStyle
+            return buttonView as! Self
+        } else {
+            os_log("Warning: View is not a KSSNativeButton, ignoring bezel style change")
+        }
+        return self
+    }
+}
+
+
 // The following are helper items used to reduce the amount of repeated code between
 // the various KSS "native" buttons.
 @available(OSX 10.15, *)
-protocol KSSNativeButtonCommonHelper : KSSNSControlViewSettable {
+protocol KSSNativeButtonCommonHelper : KSSNSButtonViewSettable {
     var title: String? { get }
     var attributedTitle: NSAttributedString? { get }
     var image: NSImage? { get }
 
     var buttonType: NSButton.ButtonType? { get }
-    var alternateImage: NSImage? { get }
     var bezelStyle: NSButton.BezelStyle? { get }
-    var isBordered: Bool? { get }
-    var autoInvertImage: Bool { get }
-    var toolTip: String? { get }
-    var colorScheme: ColorScheme { get }
 }
 
 /// :nodoc:
 @available(OSX 10.15, *)
 extension KSSNativeButtonCommonHelper {
-    func commonMakeButton() -> NSButton {
+    func commonMakeButton<View : NSViewRepresentable>(context: NSViewRepresentableContext<View>) -> NSButton
+        where View.NSViewType : NSButton
+    {
         let button = NSButton(title: "", target: nil, action: nil)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setContentHuggingPriority(.defaultHigh, for: .vertical)
@@ -203,23 +276,22 @@ extension KSSNativeButtonCommonHelper {
             button.bezelStyle = bezelStyle
         }
 
-        if let isBordered = isBordered {
-            button.isBordered = isBordered
-        }
-
-        if let toolTip = toolTip {
-            button.toolTip = toolTip
-        }
-
+        _ = applyNSButtonViewSettings(button as! View.NSViewType, context: context)
         return button
     }
 
-    func commonUpdateButton(_ button: NSButton) {
-        let shouldInvert = autoInvertImage && (colorScheme == .dark)
+
+    func commonUpdateButton<View : NSViewRepresentable>(_ button: NSButton,
+                                                        context: NSViewRepresentableContext<View>)
+        where View.NSViewType : NSButton
+    {
+        _ = applyNSButtonViewSettings(button as! View.NSViewType, context: context)
+        let colorScheme = context.environment.colorScheme
+        let shouldInvert = nsButtonViewSettings.autoInvertImage && (colorScheme == .dark)
         if let image = image {
             button.image = shouldInvert ? image.inverted() : image
         }
-        if let alternateImage = alternateImage {
+        if let alternateImage = nsButtonViewSettings.alternateImage {
             button.alternateImage = shouldInvert ? alternateImage.inverted() : alternateImage
         }
     }

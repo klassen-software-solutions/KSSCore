@@ -43,10 +43,6 @@ class KSSToggleTests : XCTestCase {
         XCTAssertEqual(button.title, "button")
         XCTAssertNil(button.attributedTitle)
         XCTAssertNil(button.image)
-        XCTAssertNil(button.alternateImage)
-        XCTAssertNil(button.isBordered)
-        XCTAssertNil(button.toolTip)
-        XCTAssertTrue(button.autoInvertImage)
 
         button = KSSToggle("button",
                            isOn: .constant(true),
@@ -64,10 +60,6 @@ class KSSToggleTests : XCTestCase {
          XCTAssertNil(button.title)
          XCTAssertEqual(button.attributedTitle, NSAttributedString(string: "button"))
          XCTAssertNil(button.image)
-         XCTAssertNil(button.alternateImage)
-         XCTAssertNil(button.isBordered)
-         XCTAssertNil(button.toolTip)
-         XCTAssertTrue(button.autoInvertImage)
 
         button = KSSToggle(withAttributedTitle: NSAttributedString(string: "button"),
                            isOn: .constant(true),
@@ -85,10 +77,6 @@ class KSSToggleTests : XCTestCase {
         XCTAssertNil(button.title)
         XCTAssertNil(button.attributedTitle)
         XCTAssertNotNil(button.image)
-        XCTAssertNil(button.alternateImage)
-        XCTAssertNil(button.isBordered)
-        XCTAssertNil(button.toolTip)
-        XCTAssertTrue(button.autoInvertImage)
 
         button = KSSToggle(withImage: NSImage(),
                            isOn: .constant(true),
@@ -117,5 +105,25 @@ class KSSToggleTests : XCTestCase {
         button = button.nsFontSize(10)
         XCTAssertNotNil(button.nsControlViewSettings.font)
         XCTAssertEqual(button.nsControlViewSettings.fontSize, 10)
+    }
+
+    func testNSButtonModifiers() {
+        var button = KSSToggle("button", isOn: .constant(true))
+        XCTAssertNil(button.nsButtonViewSettings.alternateImage)
+        XCTAssertTrue(button.nsButtonViewSettings.autoInvertImage)
+        XCTAssertNil(button.nsButtonViewSettings.isBordered)
+        XCTAssertNil(button.nsButtonViewSettings.showsBorderOnlyWhileMouseInside)
+        XCTAssertNil(button.nsButtonViewSettings.toolTip)
+
+        button = button.nsAlternateImage(NSImage())
+            .nsAutoInvertImage(false)
+            .nsIsBordered(true)
+            .nsShowsBorderOnlyWhileMouseInside(true)
+            .nsToolTip("tooltip")
+        XCTAssertNotNil(button.nsButtonViewSettings.alternateImage)
+        XCTAssertFalse(button.nsButtonViewSettings.autoInvertImage)
+        XCTAssertTrue(button.nsButtonViewSettings.isBordered!)
+        XCTAssertTrue(button.nsButtonViewSettings.showsBorderOnlyWhileMouseInside!)
+        XCTAssertEqual(button.nsButtonViewSettings.toolTip, "tooltip")
     }
 }
