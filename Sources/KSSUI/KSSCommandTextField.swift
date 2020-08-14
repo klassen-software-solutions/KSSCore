@@ -21,7 +21,7 @@ import SwiftUI
  - Automatic highlighting of errors.
  */
 @available(OSX 10.15, *)
-public struct KSSCommandTextField: NSViewRepresentable, KSSNSControlViewSettable {
+public struct KSSCommandTextField: NSViewRepresentable, KSSNSControlViewSettable, KSSValidatingView {
     /// Settings applicable to all KSS `NSControl` based Views.
     public var nsControlViewSettings = KSSNSControlViewSettings()
 
@@ -36,16 +36,9 @@ public struct KSSCommandTextField: NSViewRepresentable, KSSNSControlViewSettable
      */
     public let helpText: String
 
-    /**
-     Function used to validate the text. Typically this would be set by the `validator` modifier.
-     */
-    public var validatorFn: ((String) -> Bool)? = nil
+    @State private var hasFocus = false
+    @State private var history = CommandHistory()
 
-    /**
-     Color used to highlight the field when it fails validation. Typically this would be set by the
-     `errorHighlight` modifier.
-     */
-    public var errorHighlightColor: NSColor = NSColor.errorHighlightColor
 
     /**
      Construct a new text field with the given binding and help text.
@@ -55,32 +48,7 @@ public struct KSSCommandTextField: NSViewRepresentable, KSSNSControlViewSettable
         self.helpText = helpText
     }
 
-    /**
-     Returns a modified View with the validation function set.
-     */
-    public func validator(perform: @escaping (String) -> Bool) -> KSSCommandTextField {
-        var newView = self
-        newView.validatorFn = perform
-        return newView
-    }
-
-    /**
-     Returns a modified View with the color used for the error highlights set.
-     */
-    public func errorHighlight(_ color: NSColor? = nil) -> KSSCommandTextField {
-        var newView = self
-        newView.errorHighlightColor = color ?? NSColor.errorHighlightColor
-        return newView
-    }
-
-
-    @State private var hasFocus = false
-    @State private var history = CommandHistory()
-
-    /// :nodoc:
-    public func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
+    // MARK: Items for NSViewRepresentable
 
     /// :nodoc:
     public func makeNSView(context: Context) -> NSTextField {
@@ -99,16 +67,22 @@ public struct KSSCommandTextField: NSViewRepresentable, KSSNSControlViewSettable
         }
     }
 
-    // I don't like this. I would prefer having an "errorState" variable like I do with
-    // the URLTextField class, and have updateNSView change the background color. However,
-    // I cannot for the life of me get the NSTextField to redraw itself at the correct
-    // time. If I could figure out how to get a SwiftUI TextField to respond to the
-    // keypresses that I need, then I would drop NSTextField altogether. But I've spent
-    // almost a week now trying to figure that out without success.
-    private func ensureBackgroundColorIs(_ color: NSColor?, for control: NSControl) {
-        if let textField = control as? NSTextField {
-            textField.backgroundColor = color
-        }
+    // MARK: Items for KSSValidatingView
+
+
+    /// :nodoc:
+    public var validatorFn: ((String) -> Bool)? = nil
+
+    /// :nodoc:
+    public var errorHighlightColor: NSColor = NSColor.errorHighlightColor
+}
+
+
+@available(OSX 10.15, *)
+extension KSSCommandTextField {
+    /// :nodoc:
+    public func makeCoordinator() -> Coordinator {
+        Coordinator(self)
     }
 
     /// :nodoc:
@@ -156,6 +130,18 @@ public struct KSSCommandTextField: NSViewRepresentable, KSSNSControlViewSettable
             if let next = parent.history.next() {
                 textView.string = next
             }
+        }
+    }
+
+    // I don't like this. I would prefer having an "errorState" variable like I do with
+    // the URLTextField class, and have updateNSView change the background color. However,
+    // I cannot for the life of me get the NSTextField to redraw itself at the correct
+    // time. If I could figure out how to get a SwiftUI TextField to respond to the
+    // keypresses that I need, then I would drop NSTextField altogether. But I've spent
+    // almost a week now trying to figure that out without success.
+    private func ensureBackgroundColorIs(_ color: NSColor?, for control: NSControl) {
+        if let textField = control as? NSTextField {
+            textField.backgroundColor = color
         }
     }
 }

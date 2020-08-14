@@ -13,7 +13,7 @@ import SwiftUI
  Provides a text field used to enter a URL.
  */
 @available(OSX 10.15, *)
-public struct KSSURLTextField: View {
+public struct KSSURLTextField: View, KSSValidatingView {
     /**
      A binding to the URL to be updated. Note that setting this only sets the initial value of the field when it
      is created. To change the URL from an outside source you must provide it with a publisher using the
@@ -25,19 +25,6 @@ public struct KSSURLTextField: View {
      The help text to be displayed in the field when it is empty.
      */
     public let helpText: String
-
-    /**
-     The current validator function. This can be used to validate the URL befgore allowing it to be accepted. For
-     example, if you want to limit the acceptable URL to `http:` and `https:`, this is the way to do that.
-     This is set using the `validator` modifier.
-     */
-    public private(set) var validatorFn: ((URL) -> Bool)? = nil
-
-    /**
-     The current highlight color used to identify the field when the validation fails. This is set using
-     the `errorHighlight` modifier.
-     */
-    public private(set) var errorHighlightColor: Color = Color(NSColor.errorHighlightColor)
 
     static private var nilUrlPublisher = PassthroughSubject<URL?, Never>().eraseToAnyPublisher()
     private var _urlPublisher: AnyPublisher<URL?, Never> = KSSURLTextField.nilUrlPublisher
@@ -63,24 +50,6 @@ public struct KSSURLTextField: View {
                 self.text = url?.absoluteString ?? ""
                 self.updateUrl()
             })
-    }
-
-    /**
-     This modifier returns a View that includes the given validator function.
-     */
-    public func validator(perform: @escaping (URL) -> Bool) -> Self {
-        var newView = self
-        newView.validatorFn = perform
-        return newView
-    }
-
-    /**
-     This modifier returns a View that sets the error highlight color.
-     */
-    public func errorHighlight(_ color: Color? = nil) -> Self {
-        var newView = self
-        newView.errorHighlightColor = color ?? Color(NSColor.errorHighlightColor)
-        return newView
     }
 
     /**
@@ -119,4 +88,12 @@ public struct KSSURLTextField: View {
             errorState = true
         }
     }
+
+    // MARK: KSSValidatingView Items
+
+    /// :nodoc:
+    public var errorHighlightColor: Color = Color(NSColor.errorHighlightColor)
+
+    /// :nodoc:
+    public var validatorFn: ((URL) -> Bool)? = nil
 }
