@@ -3,6 +3,7 @@
 //  
 //
 //  Created by Steven W. Klassen on 2020-08-05.
+//  Released under the MIT license.
 //
 
 import Foundation
@@ -32,12 +33,12 @@ class KSSURLTextFieldTests: XCTestCase {
         var control = KSSURLTextField(url: .constant(nil))
         XCTAssertEqual(control.helpText, "url")
         XCTAssertNil(control.validatorFn)
-        XCTAssertEqual(control.errorHighlightColor, Color(KSSCommandTextField.defaultErrorHighlightColor))
+        XCTAssertEqual(control.errorHighlightColor, Color(NSColor.errorHighlightColor))
 
         control = KSSURLTextField(url: .constant(nil), helpText: "help")
         XCTAssertEqual(control.helpText, "help")
         XCTAssertNil(control.validatorFn)
-        XCTAssertEqual(control.errorHighlightColor, Color(KSSCommandTextField.defaultErrorHighlightColor))
+        XCTAssertEqual(control.errorHighlightColor, Color(NSColor.errorHighlightColor))
     }
 
     func testModifiers() {

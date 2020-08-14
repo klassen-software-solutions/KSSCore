@@ -3,6 +3,7 @@
 //
 //  Created by Steven W. Klassen on 2020-01-24.
 //  Copyright © 2020 Klassen Software Solutions. All rights reserved.
+//  Released under the MIT license.
 //
 
 import SwiftUI
@@ -44,7 +45,7 @@ public struct KSSCommandTextField: NSViewRepresentable, KSSNSControlViewSettable
      Color used to highlight the field when it fails validation. Typically this would be set by the
      `errorHighlight` modifier.
      */
-    public var errorHighlightColor: NSColor = KSSCommandTextField.defaultErrorHighlightColor
+    public var errorHighlightColor: NSColor = NSColor.errorHighlightColor
 
     /**
      Construct a new text field with the given binding and help text.
@@ -68,15 +69,13 @@ public struct KSSCommandTextField: NSViewRepresentable, KSSNSControlViewSettable
      */
     public func errorHighlight(_ color: NSColor? = nil) -> KSSCommandTextField {
         var newView = self
-        newView.errorHighlightColor = color ?? KSSCommandTextField.defaultErrorHighlightColor
+        newView.errorHighlightColor = color ?? NSColor.errorHighlightColor
         return newView
     }
 
 
     @State private var hasFocus = false
     @State private var history = CommandHistory()
-
-    static let defaultErrorHighlightColor = NSColor.systemYellow.withAlphaComponent(0.50)
 
     /// :nodoc:
     public func makeCoordinator() -> Coordinator {

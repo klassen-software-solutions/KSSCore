@@ -3,6 +3,7 @@
 //
 //  Created by Steven W. Klassen on 2020-01-16.
 //  Copyright © 2020 Klassen Software Solutions. All rights reserved.
+//  Released under the MIT license.
 //
 
 import Combine
@@ -36,7 +37,7 @@ public struct KSSURLTextField: View {
      The current highlight color used to identify the field when the validation fails. This is set using
      the `errorHighlight` modifier.
      */
-    public private(set) var errorHighlightColor: Color = Color(KSSCommandTextField.defaultErrorHighlightColor)
+    public private(set) var errorHighlightColor: Color = Color(NSColor.errorHighlightColor)
 
     static private var nilUrlPublisher = PassthroughSubject<URL?, Never>().eraseToAnyPublisher()
     private var _urlPublisher: AnyPublisher<URL?, Never> = KSSURLTextField.nilUrlPublisher
@@ -78,7 +79,7 @@ public struct KSSURLTextField: View {
      */
     public func errorHighlight(_ color: Color? = nil) -> Self {
         var newView = self
-        newView.errorHighlightColor = color ?? Color(KSSCommandTextField.defaultErrorHighlightColor)
+        newView.errorHighlightColor = color ?? Color(NSColor.errorHighlightColor)
         return newView
     }
 

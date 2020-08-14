@@ -4,6 +4,7 @@
 //
 //  Created by Steven W. Klassen on 2020-01-23.
 //  Copyright © 2020 Klassen Software Solutions. All rights reserved.
+//  Released under the MIT license.
 //
 
 import Foundation
@@ -66,7 +67,7 @@ fileprivate struct InvertColorIfModifier: ViewModifier {
 }
 
 @available(OSX 10.15, *)
-fileprivate let errorHighlightColor = Color(KSSCommandTextField.defaultErrorHighlightColor)
+fileprivate let errorHighlightColor = Color(NSColor.errorHighlightColor)
 
 @available(OSX 10.15, *)
 fileprivate struct ErrorStateIfModifier: ViewModifier {

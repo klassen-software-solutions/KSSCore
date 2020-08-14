@@ -3,6 +3,7 @@
 //  
 //
 //  Created by Steven W. Klassen on 2020-08-05.
+//  Released under the MIT license.
 //
 
 import Foundation
@@ -35,13 +36,13 @@ class KSSCommandTextFieldTests: XCTestCase {
         XCTAssertEqual(commandField.command, "hi")
         XCTAssertEqual(commandField.helpText, "command")
         XCTAssertNil(commandField.validatorFn)
-        XCTAssertEqual(commandField.errorHighlightColor, KSSCommandTextField.defaultErrorHighlightColor)
+        XCTAssertEqual(commandField.errorHighlightColor, NSColor.errorHighlightColor)
 
         commandField = KSSCommandTextField(command: .constant("hi"), helpText: "help")
         XCTAssertEqual(commandField.command, "hi")
         XCTAssertEqual(commandField.helpText, "help")
         XCTAssertNil(commandField.validatorFn)
-        XCTAssertEqual(commandField.errorHighlightColor, KSSCommandTextField.defaultErrorHighlightColor)
+        XCTAssertEqual(commandField.errorHighlightColor, NSColor.errorHighlightColor)
     }
 
     func testModifiers() {
