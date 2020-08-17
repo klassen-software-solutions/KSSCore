@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 import XCTest
 
-import KSSUI
+@testable import KSSUI
 
 
 @available(OSX 10.15, *)
@@ -25,17 +25,24 @@ class KSSSearchFieldTests: XCTestCase {
         }
     }
 
-
     func testConstruction() {
         var control = KSSSearchField()
         XCTAssertEqual(control.helpText, "")
         XCTAssertEqual(control.recentSearchesKey, "")
+        XCTAssertFalse(control.isFilterField)
         XCTAssertNil(control.searchCallback)
 
         control = KSSSearchField(helpText: "help", recentSearchesKey: "recents") { _ in }
         XCTAssertEqual(control.helpText, "help")
         XCTAssertEqual(control.recentSearchesKey, "recents")
+        XCTAssertFalse(control.isFilterField)
         XCTAssertNotNil(control.searchCallback)
+
+        control = KSSSearchField(isFilterField: true)
+        XCTAssertEqual(control.helpText, "")
+        XCTAssertEqual(control.recentSearchesKey, "")
+        XCTAssertTrue(control.isFilterField)
+        XCTAssertNil(control.searchCallback)
     }
 
     func testNSCommandModifiers() {
