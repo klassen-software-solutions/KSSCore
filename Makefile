@@ -5,7 +5,7 @@ include BuildSystem/swift/common.mk
 
 check: Tests/LinuxMain.swift
 
-TEST_SOURCES := $(wildcard Tests/KSSFoundationTests/*.swift)
+TEST_SOURCES := $(wildcard Tests/KSSFoundationTests/*.swift Tests/KSSTestTests/*.swift)
 
 Tests/LinuxMain.swift: $(TEST_SOURCES)
 	swift test --generate-linuxmain
@@ -13,8 +13,10 @@ Tests/LinuxMain.swift: $(TEST_SOURCES)
 	echo "" >> $@
 	echo "import XCTest" >> $@
 	echo "import KSSFoundationTests" >> $@
+	echo "import KSSTestTests" >> $@
 	echo "" >> $@
 	echo "var tests = [XCTestCaseEntry]()" >> $@
 	echo "tests += KSSFoundationTests.__allTests()" >> $@
+	echo "tests += KSSTestTests.__allTests()" >> $@
 	echo "" >> $@
 	echo "XCTMain(tests)" >> $@

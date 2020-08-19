@@ -26,8 +26,11 @@ public extension NSApplication {
     /**
      Return the build number of the application as read from the bundle. Note that as the build number is a required
      key in the bundle, if it does not exist, or if it cannot be converted to an integer, this will cause a fatal error.
+
+     - warning: If the bundle version includes a decimal point (which may be true during library unit testing) it will
+        be rounded down to the nearest integer.
      */
-    var buildNumber: Int { Int(Bundle.main.infoDictionary![kCFBundleVersionKey as String] as! String)! }
+    var buildNumber: Int { Int(Double(Bundle.main.infoDictionary![kCFBundleVersionKey as String] as! String)!) }
 
 
     /**
@@ -58,5 +61,20 @@ public extension NSApplication {
         try fileManager.findOrCreateDirectory(at: applicationDirectoryURL,
                                               withIntermediateDirectories: true)
         return applicationDirectoryURL
+    }
+
+    /**
+     Returns true if the current appearance is a dark mode appearance.
+     */
+    var isDarkMode: Bool {
+        if #available(OSX 10.15, *) {
+            let appearanceDescription = effectiveAppearance.debugDescription.lowercased()
+            return appearanceDescription.contains("dark")
+        } else {
+            if let appleInterfaceStyle = UserDefaults.standard.object(forKey: "AppleInterfaceStyle") as? String {
+                return appleInterfaceStyle.lowercased().contains("dark")
+            }
+            return false
+        }
     }
 }

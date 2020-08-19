@@ -5,7 +5,7 @@ import SwiftUI
  SwiftUI text view control allowing multi-font content. The content is controlled via a binding to an
  `NSMutableAttributedString`.
 
- - note: This is a modified version of code provided by Thiago Holanda, called the `MacEditorTextView`.
+ - note: This is based on code provided by Thiago Holanda, called the `MacEditorTextView`.
     The original code is available from https://twitter.com/tholanda and is subject to the MIT License.
  */
 @available(OSX 10.15, *)

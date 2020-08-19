@@ -4,6 +4,7 @@
 //
 //  Created by Steven W. Klassen on 2020-02-14.
 //  Copyright © 2020 Klassen Software Solutions. All rights reserved.
+//  Released under the MIT license.
 //
 
 import Cocoa
@@ -16,6 +17,7 @@ public extension NSMenu {
      - returns:
      The first item that has the requested tag or nil if no such item could be found.
      */
+    @available(*, deprecated, message: "Use item(withTag:) instead")
     func findMenuItem(withTag tag: Int) -> NSMenuItem? {
         for item in self.items {
             if !item.isSeparatorItem {

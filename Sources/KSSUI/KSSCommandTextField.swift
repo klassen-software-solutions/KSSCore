@@ -3,6 +3,7 @@
 //
 //  Created by Steven W. Klassen on 2020-01-24.
 //  Copyright © 2020 Klassen Software Solutions. All rights reserved.
+//  Released under the MIT license.
 //
 
 import SwiftUI
@@ -20,7 +21,10 @@ import SwiftUI
  - Automatic highlighting of errors.
  */
 @available(OSX 10.15, *)
-public struct KSSCommandTextField: NSViewRepresentable {
+public struct KSSCommandTextField: NSViewRepresentable, KSSNSControlViewSettable, KSSValidatingView {
+    /// Settings applicable to all KSS `NSControl` based Views.
+    public var nsControlViewSettings = KSSNSControlViewSettings()
+
     /**
      Binding to the text of the current command. This will be updated when the user presses the `Return`
      or `Enter` keys.
@@ -32,16 +36,9 @@ public struct KSSCommandTextField: NSViewRepresentable {
      */
     public let helpText: String
 
-    /**
-     Function used to validate the text. Typically this would be set by the `validator` modifier.
-     */
-    public var validatorFn: ((String) -> Bool)? = nil
+    @State private var hasFocus = false
+    @State private var history = CommandHistory()
 
-    /**
-     Color used to highlight the field when it fails validation. Typically this would be set by the
-     `errorHighlight` modifier.
-     */
-    public var errorHighlightColor: NSColor = KSSCommandTextField.defaultErrorHighlightColor
 
     /**
      Construct a new text field with the given binding and help text.
@@ -51,34 +48,7 @@ public struct KSSCommandTextField: NSViewRepresentable {
         self.helpText = helpText
     }
 
-    /**
-     Returns a modified View with the validation function set.
-     */
-    public func validator(perform: @escaping (String) -> Bool) -> KSSCommandTextField {
-        var newView = self
-        newView.validatorFn = perform
-        return newView
-    }
-
-    /**
-     Returns a modified View with the color used for the error highlights set.
-     */
-    public func errorHighlight(_ color: NSColor? = nil) -> KSSCommandTextField {
-        var newView = self
-        newView.errorHighlightColor = color ?? KSSCommandTextField.defaultErrorHighlightColor
-        return newView
-    }
-
-
-    @State private var hasFocus = false
-    @State private var history = CommandHistory()
-
-    static let defaultErrorHighlightColor = NSColor.systemYellow.withAlphaComponent(0.50)
-
-    /// :nodoc:
-    public func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
+    // MARK: Items for NSViewRepresentable
 
     /// :nodoc:
     public func makeNSView(context: Context) -> NSTextField {
@@ -86,24 +56,33 @@ public struct KSSCommandTextField: NSViewRepresentable {
         textField.placeholderString = helpText
         textField.delegate = context.coordinator
         textField.stringValue = command
+        _ = applyNSControlViewSettings(textField, context: context)
         return textField
     }
 
     /// :nodoc:
-    public func updateNSView(_ nsView: NSTextField, context: Context) {
-        // Intentionally left empty
+    public func updateNSView(_ textField: NSTextField, context: Context) {
+        DispatchQueue.main.async {
+            _ = self.applyNSControlViewSettings(textField, context: context)
+        }
     }
 
-    // I don't like this. I would prefer having an "errorState" variable like I do with
-    // the URLTextField class, and have updateNSView change the background color. However,
-    // I cannot for the life of me get the NSTextField to redraw itself at the correct
-    // time. If I could figure out how to get a SwiftUI TextField to respond to the
-    // keypresses that I need, then I would drop NSTextField altogether. But I've spent
-    // almost a week now trying to figure that out without success.
-    private func ensureBackgroundColorIs(_ color: NSColor?, for control: NSControl) {
-        if let textField = control as? NSTextField {
-            textField.backgroundColor = color
-        }
+    // MARK: Items for KSSValidatingView
+
+
+    /// :nodoc:
+    public var validatorFn: ((String) -> Bool)? = nil
+
+    /// :nodoc:
+    public var errorHighlightColor: NSColor = NSColor.errorHighlightColor
+}
+
+
+@available(OSX 10.15, *)
+extension KSSCommandTextField {
+    /// :nodoc:
+    public func makeCoordinator() -> Coordinator {
+        Coordinator(self)
     }
 
     /// :nodoc:
@@ -151,6 +130,18 @@ public struct KSSCommandTextField: NSViewRepresentable {
             if let next = parent.history.next() {
                 textView.string = next
             }
+        }
+    }
+
+    // I don't like this. I would prefer having an "errorState" variable like I do with
+    // the URLTextField class, and have updateNSView change the background color. However,
+    // I cannot for the life of me get the NSTextField to redraw itself at the correct
+    // time. If I could figure out how to get a SwiftUI TextField to respond to the
+    // keypresses that I need, then I would drop NSTextField altogether. But I've spent
+    // almost a week now trying to figure that out without success.
+    private func ensureBackgroundColorIs(_ color: NSColor?, for control: NSControl) {
+        if let textField = control as? NSTextField {
+            textField.backgroundColor = color
         }
     }
 }

@@ -20,6 +20,14 @@ class NSImageExtensionTests: XCTestCase {
         XCTAssertEqual(inputImage.size.height, outputImage.size.height)
         XCTAssertNotEqual(inputImage, outputImage)
     }
+
+    func testResized() {
+        let image = NSImage(fromInputStream: streamFromEncodedString(plusSymbolEncodedString))?
+            .resized(to: NSSize(width: 16, height: 18))
+        XCTAssertNotNil(image)
+        XCTAssertEqual(image?.size.width, 16)
+        XCTAssertEqual(image?.size.height, 18)
+    }
 }
 
 fileprivate let plusSymbolEncodedString = """

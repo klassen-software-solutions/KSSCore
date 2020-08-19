@@ -95,6 +95,7 @@ public extension Array {
     }
 }
 
+
 public extension Array where Element : Comparable {
 
     /**
@@ -111,4 +112,20 @@ public extension Array where Element : Comparable {
         return insertInSorted(newElement) { $0 < $1 }
     }
 
+}
+
+
+public extension Array where Element : Equatable {
+
+    /**
+     Returns true if all the items in the array are equal.
+
+     - note: Also returns true if the array is empty.
+     */
+    var allAreEqual: Bool {
+        if let firstElem = first {
+            return !contains { $0 != firstElem }
+        }
+        return true
+    }
 }
