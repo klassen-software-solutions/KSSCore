@@ -6,7 +6,8 @@ import PackageDescription
 let package = Package(
     name: "KSSCore",
     platforms: [
-        .macOS(.v10_11)
+        .macOS(.v10_11),
+        .iOS(.v13),
     ],
     products: {
         var products: [Product] = [

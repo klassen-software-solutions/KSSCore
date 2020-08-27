@@ -5,8 +5,11 @@
 //  Copyright © 2020 Klassen Software Solutions. All rights reserved.
 //
 
+#if canImport(Cocoa)
+
 import os
 import AppKit
+import Cocoa
 import Foundation
 
 public extension NSImage {
@@ -89,3 +92,5 @@ fileprivate extension CIImage {
         return nil
     }
 }
+
+#endif

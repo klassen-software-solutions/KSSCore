@@ -2,6 +2,8 @@
 //  Created by Steven W. Klassen on 2020-06-18.
 //
 
+#if canImport(Cocoa)
+
 import SwiftUI
 import XCTest
 
@@ -26,3 +28,5 @@ class KSSWebConstructorTests: XCTestCase {
         // in a view. It is a compile, not a runtime, test.
     }
 }
+
+#endif

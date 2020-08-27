@@ -1,3 +1,5 @@
+#if canImport(Cocoa)
+
 import XCTest
 import KSSCocoa
 
@@ -45,3 +47,5 @@ fileprivate func streamFromEncodedString(_ encodedString: String) -> InputStream
     let decodedData = Data(base64Encoded: encodedString, options: .ignoreUnknownCharacters)!
     return InputStream(data: decodedData)
 }
+
+#endif

@@ -106,19 +106,30 @@ public extension String {
 
     @available(OSX 10.14, *)
     private func prettyPrintXML() -> String? {
+#if os(macOS)
         do {
             let doc = try XMLDocument(xmlString: self)
 
-#if os(macOS)
             // The Mac implementation incorrectly defaults isStandalone to true even when
             // there is no DTD specified (in which case isStandalone should always
             // be false).
             if doc.isStandalone && doc.dtd == nil {
                 doc.isStandalone = false
             }
-#endif
 
-#if os(Linux)
+            let encoding = getEncoding(fromXml: doc)
+            let newData = doc.xmlData(options: [.nodePrettyPrint])
+            if let newStr = String(data: newData, encoding: encoding) {
+                return newStr
+            }
+        } catch {
+            // Intentionally empty
+        }
+        return nil
+#elseif os(Linux)
+        do {
+            let doc = try XMLDocument(xmlString: self)
+
             // The Linux version does not currently handle invalid XML properly. However,
             // we can check for this by seeing if the root element is nil. This has been
             // reported at https://bugs.swift.org/browse/SR-13191.
@@ -137,9 +148,6 @@ public extension String {
             if encoding != .utf8 {
                 return nil
             }
-#else
-            let encoding = getEncoding(fromXml: doc)
-#endif
 
             let newData = doc.xmlData(options: [.nodePrettyPrint])
             if let newStr = String(data: newData, encoding: encoding) {
@@ -149,8 +157,12 @@ public extension String {
             // Intentionally empty
         }
         return nil
+#else
+        return nil
+#endif
     }
 
+#if os(macOS) || os(Linux)
     // These encodings are based on the the following site:
     // https://www.iana.org/assignments/character-sets/character-sets.xhtml
     @available(OSX 10.14, *)
@@ -209,5 +221,5 @@ public extension String {
             return .utf8
         }
     }
-
+#endif
 }

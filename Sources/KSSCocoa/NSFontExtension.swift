@@ -6,6 +6,8 @@
 //  Copyright © 2020 Klassen Software Solutions. All rights reserved.
 //
 
+#if canImport(Cocoa)
+
 import Cocoa
 
 public extension NSFont {
@@ -35,3 +37,5 @@ public extension NSFont {
         return withTraits(traits: .italic)!
     }
 }
+
+#endif
