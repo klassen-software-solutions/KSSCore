@@ -1,3 +1,7 @@
+
+#if canImport(Cocoa)
+
+import Cocoa
 import Combine
 import SwiftUI
 
@@ -9,6 +13,7 @@ import SwiftUI
     The original code is available from https://twitter.com/tholanda and is subject to the MIT License.
  */
 @available(OSX 10.15, *)
+@available(iOS, unavailable)
 public struct KSSTextView: NSViewRepresentable {
     /**
      The binding used to control the text view contents.
@@ -251,3 +256,11 @@ public final class CustomTextView: NSView {
         scrollView.documentView = textView
     }
 }
+
+#else
+
+// Force the compiler to give us a more descriptive error message.
+@available(iOS, unavailable)
+public struct KSSTextField {}
+
+#endif

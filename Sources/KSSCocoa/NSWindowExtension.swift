@@ -6,8 +6,10 @@
 //  Copyright © 2020 Klassen Software Solutions. All rights reserved.
 //
 
-import Cocoa
+#if canImport(Cocoa)
+
 import os
+import Cocoa
 
 public extension NSWindow {
     /**
@@ -41,3 +43,5 @@ public extension NSWindow {
         }
     }
 }
+
+#endif

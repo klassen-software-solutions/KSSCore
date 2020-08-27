@@ -6,6 +6,8 @@
 //  Copyright © 2020 Klassen Software Solutions. All rights reserved.
 //
 
+#if canImport(Cocoa)
+
 import Cocoa
 import SwiftUI
 
@@ -45,3 +47,5 @@ public extension NSView {
         return nil
     }
 }
+
+#endif

@@ -30,15 +30,21 @@ class KSSURLTextFieldTests: XCTestCase {
 
 
     func testConstruction() {
+#if canImport(Cocoa)
+        let correctColor = Color(NSColor.errorHighlightColor)
+#else
+        let correctColor = Color.yellow.opacity(0.5)
+#endif
+
         var control = KSSURLTextField(url: .constant(nil))
         XCTAssertEqual(control.helpText, "url")
         XCTAssertNil(control.validatorFn)
-        XCTAssertEqual(control.errorHighlightColor, Color(NSColor.errorHighlightColor))
+        XCTAssertEqual(control.errorHighlightColor, correctColor)
 
         control = KSSURLTextField(url: .constant(nil), helpText: "help")
         XCTAssertEqual(control.helpText, "help")
         XCTAssertNil(control.validatorFn)
-        XCTAssertEqual(control.errorHighlightColor, Color(NSColor.errorHighlightColor))
+        XCTAssertEqual(control.errorHighlightColor, correctColor)
     }
 
     func testModifiers() {

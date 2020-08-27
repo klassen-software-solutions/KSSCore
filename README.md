@@ -18,10 +18,10 @@ The modules provided by this package are the following:
 
  [API Documentation](https://www.kss.cc/apis/KSSCore/docs/index.html)
  
- ## Contributing
+ ## Module Availability
  
-If you are going to contribute to this project, please make yourself familiar with our standards and
-procedures:
-
-* [Git Procedures](https://www.kss.cc/standards-git.html)
-* [Swift Coding Standards](https://www.kss.cc/standards-swift.html)
+ Not all modules are currently available on all architechtures. Presently we support the following:
+ 
+ * _macOS_ - All modules are available
+ * _iOS_ - All modules are available, except for `KSSCocoa` and `KSSWeb`.
+ * _Linux_ - Only `KSSFoundation` and `KSSTest` are available

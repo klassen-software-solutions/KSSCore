@@ -5,7 +5,10 @@
 //  Copyright © 2020 Klassen Software Solutions. All rights reserved.
 //
 
+#if canImport(Cocoa)
+
 import os
+import Cocoa
 import SwiftUI
 import KSSCocoa
 
@@ -20,6 +23,7 @@ import KSSCocoa
     https://stackoverflow.com/questions/57283931/swiftui-on-mac-how-do-i-designate-a-button-as-being-the-primary
  */
 @available(OSX 10.15, *)
+@available(iOS, unavailable)
 public struct KSSNativeButton: NSViewRepresentable, KSSNativeButtonCommonHelper {
 
     /// Settings applicable to all KSS `NSControl` based Views.
@@ -332,3 +336,11 @@ extension KSSNativeButtonControlActionClosureProtocol {
 
 /// :nodoc:
 extension NSControl: KSSNativeButtonControlActionClosureProtocol {}
+
+#else
+
+// Force the compiler to give us a more descriptive error message.
+@available(iOS, unavailable)
+public struct KSSNativeButton {}
+
+#endif

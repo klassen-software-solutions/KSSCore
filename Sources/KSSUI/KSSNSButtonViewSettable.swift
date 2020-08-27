@@ -6,6 +6,8 @@
 //  Copyright © 2020 Klassen Software Solutions. All rights reserved.
 //
 
+#if canImport(Cocoa)
+
 import os
 import Cocoa
 import Foundation
@@ -18,6 +20,7 @@ import SwiftUI
  their settings, common to most buttons, to be set via modifiers.
  */
 @available(OSX 10.15, *)
+@available(iOS, unavailable)
 public protocol KSSNSButtonViewSettable : KSSNSControlViewSettable {
     /// :nodoc:
     var nsButtonViewSettings: KSSNSButtonViewSettings { get set }
@@ -161,3 +164,11 @@ public extension NSViewRepresentable {
         return self
     }
 }
+
+#else
+
+// Force the compiler to give us a more descriptive error message.
+@available(iOS, unavailable)
+public protocol KSSNSButtonViewSettable {}
+
+#endif

@@ -5,6 +5,8 @@
 //  Created by Steven W. Klassen on 2020-08-05.
 //
 
+#if canImport(Cocoa)
+
 import Foundation
 import SwiftUI
 import XCTest
@@ -59,3 +61,5 @@ class KSSSearchFieldTests: XCTestCase {
         XCTAssertEqual(control.nsControlViewSettings.fontSize, 10)
     }
 }
+
+#endif

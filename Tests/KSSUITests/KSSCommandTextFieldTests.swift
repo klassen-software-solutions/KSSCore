@@ -6,6 +6,8 @@
 //  Released under the MIT license.
 //
 
+#if canImport(Cocoa)
+
 import Foundation
 import SwiftUI
 import XCTest
@@ -67,3 +69,5 @@ class KSSCommandTextFieldTests: XCTestCase {
         XCTAssertEqual(commandField.nsControlViewSettings.fontSize, 10)
     }
 }
+
+#endif

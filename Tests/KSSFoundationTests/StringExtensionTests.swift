@@ -101,7 +101,9 @@ class StringExtensionTests: XCTestCase {
     @available(OSX 10.14, *)
     func testPrettyPrint() {
         XCTAssertEqual(jsonExample.prettyPrint(), jsonCorrectResults)
+#if os(macOS) || os(Linux)
         XCTAssertEqual(xmlExample.prettyPrint(), xmlCorrectResults)
+#endif
         XCTAssertEqual(notPPExample.prettyPrint(), notPPExample)
 
         // Test for bug #30. Pretty printing xmlCorrectResults should produce itself.

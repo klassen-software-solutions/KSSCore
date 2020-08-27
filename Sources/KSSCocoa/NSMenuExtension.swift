@@ -7,6 +7,8 @@
 //  Released under the MIT license.
 //
 
+#if canImport(Cocoa)
+
 import Cocoa
 
 public extension NSMenu {
@@ -34,3 +36,5 @@ public extension NSMenu {
         return nil
     }
 }
+
+#endif

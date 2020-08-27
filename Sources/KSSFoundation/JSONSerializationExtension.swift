@@ -46,7 +46,7 @@ public extension JSONSerialization {
         }
     }
 
-#if os(macOS)
+#if os(macOS) || os(iOS)
     /**
      Write JSON data for a generic Swift object to a stream. See the warnings for data:fromSwiftObject.
 
