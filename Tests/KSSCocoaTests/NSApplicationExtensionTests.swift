@@ -1,3 +1,5 @@
+#if canImport(Cocoa)
+
 import XCTest
 import KSSCocoa
 
@@ -14,3 +16,5 @@ class NSApplicationExtensionTests: XCTestCase {
         _ = NSApplication.shared.isDarkMode
     }
 }
+
+#endif

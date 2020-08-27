@@ -5,6 +5,8 @@
 //  Created by Steven W. Klassen on 2020-08-05.
 //
 
+#if canImport(Cocoa)
+
 import Foundation
 import SwiftUI
 import XCTest
@@ -162,3 +164,5 @@ class KSSNativeButtonTests: XCTestCase {
         XCTAssertEqual(button.bezelStyle, .disclosure)
     }
 }
+
+#endif

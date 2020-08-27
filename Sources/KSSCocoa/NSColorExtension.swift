@@ -7,6 +7,8 @@
 //  Released under the MIT license.
 //
 
+#if canImport(Cocoa)
+
 import Cocoa
 import Foundation
 
@@ -17,3 +19,5 @@ public extension NSColor {
     /// it stand out better.
     class var errorHighlightColor: NSColor { NSColor.systemYellow.withAlphaComponent(0.50) }
 }
+
+#endif

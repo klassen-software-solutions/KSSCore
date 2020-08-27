@@ -6,7 +6,11 @@
 //  Released under the MIT license.
 //
 
+#if canImport(Cocoa)
+
+import Cocoa
 import SwiftUI
+
 
 /**
  TextField control suitable for entering command line type items.
@@ -21,6 +25,7 @@ import SwiftUI
  - Automatic highlighting of errors.
  */
 @available(OSX 10.15, *)
+@available(iOS, unavailable)
 public struct KSSCommandTextField: NSViewRepresentable, KSSNSControlViewSettable, KSSValidatingView {
     /// Settings applicable to all KSS `NSControl` based Views.
     public var nsControlViewSettings = KSSNSControlViewSettings()
@@ -204,3 +209,11 @@ private final class CommandHistory {
             + ", commands: \(commands)"
     }
 }
+
+#else
+
+// Force the compiler to give us a more descriptive error message.
+@available(iOS, unavailable)
+public struct KSSCommandTextField {}
+
+#endif

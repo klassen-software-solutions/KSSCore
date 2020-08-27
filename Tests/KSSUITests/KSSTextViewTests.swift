@@ -5,6 +5,8 @@
 //  Created by Steven W. Klassen on 2020-03-16.
 //
 
+#if canImport(Cocoa)
+
 import SwiftUI
 import XCTest
 import KSSUI
@@ -29,3 +31,5 @@ class KSSTextViewTests: XCTestCase {
         XCTAssertTrue(view.isAutoScrollToBottom)
     }
 }
+
+#endif

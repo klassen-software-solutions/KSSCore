@@ -5,6 +5,9 @@
 //  Copyright © 2020 Klassen Software Solutions. All rights reserved.
 //
 
+#if canImport(Cocoa)
+
+import Cocoa
 import SwiftUI
 
 
@@ -14,6 +17,7 @@ import SwiftUI
  a tool tip.
  */
 @available(OSX 10.15, *)
+@available(iOS, unavailable)
 public struct KSSToggle: NSViewRepresentable, KSSNativeButtonCommonHelper {
     /// Settings applicable to all KSS `NSControl` based Views.
     public var nsControlViewSettings = KSSNSControlViewSettings()
@@ -143,3 +147,11 @@ public struct KSSToggle: NSViewRepresentable, KSSNativeButtonCommonHelper {
         }
     }
 }
+
+#else
+
+// Force the compiler to give us a more descriptive error message.
+@available(iOS, unavailable)
+public struct KSSToggle {}
+
+#endif

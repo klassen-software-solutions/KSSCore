@@ -5,6 +5,8 @@
 //  Copyright © 2020 Klassen Software Solutions. All rights reserved.
 //
 
+#if canImport(Cocoa)
+
 import Cocoa
 import SwiftUI
 import WebKit
@@ -14,6 +16,7 @@ import os
  SwiftUI view for displaying HTML. This is essentially a SwiftUI wrapper around a WKWebView.
  */
 @available(OSX 10.15, *)
+@available(iOS, unavailable)
 public struct KSSWebView: NSViewRepresentable {
     /**
      A binding to the URL whose content is to be displayed.
@@ -79,3 +82,11 @@ extension KSSWebView {
         }
     }
 }
+
+#else
+
+// Force the compiler to give us a more descriptive message.
+@available(iOS, unavailable)
+public struct KSSWebView {}
+
+#endif

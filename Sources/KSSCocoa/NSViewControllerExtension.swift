@@ -6,6 +6,8 @@
 //  Copyright © 2017 Klassen Software Solutions. All rights reserved.
 //
 
+#if canImport(Cocoa)
+
 import Foundation
 import Cocoa
 import KSSFoundation
@@ -44,3 +46,5 @@ public extension NSViewController {
         return applicationDirectoryURL
     }
 }
+
+#endif

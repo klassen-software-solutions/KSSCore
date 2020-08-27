@@ -5,12 +5,16 @@
 //  Copyright © 2020 Klassen Software Solutions. All rights reserved.
 //
 
+#if canImport(Cocoa)
+
+import Cocoa
 import SwiftUI
 
 /**
  Provides a SwiftUI view based on an NSSearchField.
  */
 @available(OSX 10.15, *)
+@available(iOS, unavailable)
 public struct KSSSearchField: NSViewRepresentable, KSSNSControlViewSettable {
     /// Settings applicable to all KSS `NSControl` based Views.
     public var nsControlViewSettings = KSSNSControlViewSettings()
@@ -192,3 +196,11 @@ extension KSSSearchField {
         }
     }
 }
+
+#else
+
+// Force the compiler to give us a more descriptive error message.
+@available(iOS, unavailable)
+public struct KSSSearchField {}
+
+#endif
