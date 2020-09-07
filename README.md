@@ -1,5 +1,5 @@
 # KSSCore
-Miscellaneous Swift utilities
+Miscellaneous non-UI Swift utilities
 
 ## Description
 
@@ -10,7 +10,6 @@ and Linux. The remaining modules are only available on Mac.
 The modules provided by this package are the following:
 
 * _KSSFoundation_ - items that depend on nothing but the Foundation classes
-* _KSSMap_ - items that depend on MapKit
 * _KSSTest_ - items that depend on XCTest
 * _KSSUI_ - items that depend on Foundation and SwiftUI
 * _KSSWeb_ - items that depend on WebKit
