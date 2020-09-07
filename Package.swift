@@ -16,7 +16,6 @@ let package = Package(
         ]
 //#if os(macOS)
 //        products.append(contentsOf: [
-//            .library(name: "KSSCocoa", targets: ["KSSCocoa"]),
 //            .library(name: "KSSMap", targets: ["KSSMap"]),
 //            .library(name: "KSSUI", targets: ["KSSUI"]),
 //            .library(name: "KSSWeb", targets: ["KSSWeb"]),
@@ -34,7 +33,6 @@ let package = Package(
         ]
 //#if os(macOS)
 //        targets.append(contentsOf: [
-//            .target(name: "KSSCocoa", dependencies: ["KSSFoundation"]),
 //            .target(name: "KSSUI", dependencies: ["KSSFoundation", "KSSCocoa"]),
 //            .target(name: "KSSMap", dependencies: ["KSSFoundation", "KSSCocoa"]),
 //            .target(name: "KSSWeb", dependencies: ["KSSFoundation", "KSSCocoa"]),
