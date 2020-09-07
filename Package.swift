@@ -10,7 +10,7 @@ let package = Package(
         .iOS(.v13),
     ],
     products: {
-        var products: [Product] = [
+        let products: [Product] = [
             .library(name: "KSSFoundation", targets: ["KSSFoundation"]),
             .library(name: "KSSTest", targets: ["KSSTest"]),
         ]
@@ -26,7 +26,7 @@ let package = Package(
     }(),
     dependencies: [],
     targets: {
-        var targets: [Target] = [
+        let targets: [Target] = [
             .target(name: "KSSFoundation", dependencies: []),
             .target(name: "KSSTest", dependencies: []),
             .testTarget(name: "KSSFoundationTests", dependencies: ["KSSFoundation"]),
