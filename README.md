@@ -12,14 +12,11 @@ The modules provided by this package are the following:
 * _KSSFoundation_ - items that depend on nothing but the Foundation classes
 * _KSSTest_ - items that depend on XCTest
 * _KSSUI_ - items that depend on Foundation and SwiftUI
-* _KSSWeb_ - items that depend on WebKit
 
  [API Documentation](https://www.kss.cc/apis/KSSCore/docs/index.html)
  
  ## Module Availability
  
- Not all modules are currently available on all architechtures. Presently we support the following:
+ At present we support all modules in _macOS_, _iOS_, and _Linux_. Note that the only Linux
+ we have tested on is Ubuntu.
  
- * _macOS_ - All modules are available
- * _iOS_ - All modules are available, except for `KSSCocoa` and `KSSWeb`.
- * _Linux_ - Only `KSSFoundation` and `KSSTest` are available

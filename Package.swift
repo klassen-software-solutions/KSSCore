@@ -17,7 +17,6 @@ let package = Package(
 //#if os(macOS)
 //        products.append(contentsOf: [
 //            .library(name: "KSSUI", targets: ["KSSUI"]),
-//            .library(name: "KSSWeb", targets: ["KSSWeb"]),
 //        ])
 //#endif
         return products
@@ -33,10 +32,7 @@ let package = Package(
 //#if os(macOS)
 //        targets.append(contentsOf: [
 //            .target(name: "KSSUI", dependencies: ["KSSFoundation", "KSSCocoa"]),
-//            .target(name: "KSSWeb", dependencies: ["KSSFoundation", "KSSCocoa"]),
-//            .testTarget(name: "KSSCocoaTests", dependencies: ["KSSCocoa"]),
 //            .testTarget(name: "KSSUITests", dependencies: ["KSSUI"]),
-//            .testTarget(name: "KSSWebTests", dependencies: ["KSSWeb"]),
 //        ])
 //#endif
         return targets
