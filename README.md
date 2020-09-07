@@ -1,5 +1,5 @@
 # KSSCore
-Miscellaneous Swift utilities
+Miscellaneous non-UI Swift utilities
 
 ## Description
 
@@ -9,19 +9,24 @@ and Linux. The remaining modules are only available on Mac.
 
 The modules provided by this package are the following:
 
-* _KSSCocoa_ - items that depend on Foundation and Cocoa
 * _KSSFoundation_ - items that depend on nothing but the Foundation classes
-* _KSSMap_ - items that depend on MapKit
 * _KSSTest_ - items that depend on XCTest
-* _KSSUI_ - items that depend on Foundation and SwiftUI
-* _KSSWeb_ - items that depend on WebKit
 
  [API Documentation](https://www.kss.cc/apis/KSSCore/docs/index.html)
  
- ## Module Availability
+ ## What Has Changed In Version 4
  
- Not all modules are currently available on all architechtures. Presently we support the following:
+ The primary change from version 3 to 4 is that all the UI related items have been removed
+ from this package into a separate package, KSSCoreUI. The primarily reason for this was to
+ make it easier to deal with both Linux and Mac systems in the same library, without a lot of
+ exceptions to our standard development tools.
  
- * _macOS_ - All modules are available
- * _iOS_ - All modules are available, except for `KSSCocoa` and `KSSWeb`.
- * _Linux_ - Only `KSSFoundation` and `KSSTest` are available
+ In particular this eliminates the need for manually maintaining the `Makefile` when new modules
+ are added since we no longer need to distinguish between Linux supported and non-Linux
+ supported modules.
+ 
+  ## Module Availability
+ 
+ At present we support all modules in _macOS_, _iOS_, and _Linux_. Note that the only Linux
+ we have tested on is Ubuntu.
+ 
