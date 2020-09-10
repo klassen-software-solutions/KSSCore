@@ -57,7 +57,7 @@ public extension String {
                 if #available(OSX 10.14, *) {
                     os_log(.error, "Could not convert string to UTF8 data")
                 } else {
-                    // Will quietly ignore the problem on older OS versions.
+                    os_log("Could not convert string to UTF8 data")
                 }
 #endif
             }

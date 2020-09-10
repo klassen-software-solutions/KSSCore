@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "KSSCore",
     platforms: [
-        .macOS(.v10_11),
+        .macOS(.v10_12),
         .iOS(.v13),
     ],
     products: [
@@ -17,7 +17,7 @@ let package = Package(
     targets: [
         .target(name: "KSSFoundation", dependencies: []),
         .target(name: "KSSTest", dependencies: []),
-        .testTarget(name: "KSSFoundationTests", dependencies: ["KSSFoundation"]),
+        .testTarget(name: "KSSFoundationTests", dependencies: ["KSSFoundation", "KSSTest"]),
         .testTarget(name: "KSSTestTests", dependencies: ["KSSTest"]),
     ]
 )
