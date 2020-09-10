@@ -212,12 +212,14 @@ public class FileSystemWatcher {
         let eventStream = try EventStream(urls, flags, latency, handler)
         streams[eventStream.id] = eventStream
 
-        #if canImport(os)
-        os_log("FileSystemWatcher: started watching as %s", eventStream.id.description)
-        for url in urls {
-            os_log("FileSystemWatcher: ...%s", url.absoluteString)
+        if #available(OSX 10.12, *) {
+            os_log("FileSystemWatcher: started watching as %s", eventStream.id.description)
+            for url in urls {
+                os_log("FileSystemWatcher: ...%s", url.absoluteString)
+            }
+        } else {
+            // Quietly ignored on earlier versions
         }
-        #endif
 
         return eventStream.id
     }
@@ -229,9 +231,13 @@ public class FileSystemWatcher {
      */
     public func stopWatching(_ id: UUID) {
         if let eventStream = streams.removeValue(forKey: id) {
-            #if canImport(os)
-            os_log("FileSystemWatcher: stopped watching %s", eventStream.id.description)
-            #endif
+            if #available(OSX 10.12, *) {
+                #if canImport(os)
+                os_log("FileSystemWatcher: stopped watching %s", eventStream.id.description)
+                #endif
+            } else {
+                // Quietly ignored on earlier versions
+            }
         }
     }
 

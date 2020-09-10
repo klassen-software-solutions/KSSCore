@@ -41,7 +41,7 @@ class FileSystemWatcherTests: XCTestCase {
         // contains an infinite loop.
         //try XCTSkipIf(true)
 
-        watcherId = try? watcher.watch(directory!, flags: [.fileEvents, .watchRoot], latency: 0.1) { events in
+        watcherId = try? watcher.watch(directory!, flags: [.fileEvents, .watchRoot], latency: 0) { events in
             print("received \(events.count) events:")
             for event in events {
                 print("  event: \(event)")
@@ -113,7 +113,7 @@ class FileSystemWatcherTests: XCTestCase {
     func testThatFileCreationIsObserved() throws {
         print("start of test")
         expectWillFulfill(within: 5) { expectation in
-            watcherId = try? watcher.watch(directory!, flags: [.noDefer, .fileEvents]) { events in
+            watcherId = try? watcher.watch(directory!, flags: [.noDefer, .fileEvents], latency: 0) { events in
                 print("111")
                 for event in events {
                     print("event: \(event)")
