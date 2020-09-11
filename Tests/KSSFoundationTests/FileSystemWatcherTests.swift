@@ -14,7 +14,6 @@ import KSSTest
 
 @testable import KSSFoundation
 
-@available(OSX 10.12, *)
 class FileSystemWatcherTests: XCTestCase {
     let watcher = FileSystemWatcher()
     let fileManager = FileManager.default
