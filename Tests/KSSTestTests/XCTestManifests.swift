@@ -19,9 +19,6 @@ extension XCTestCaseExpectTests {
     // to regenerate.
     static let __allTests__XCTestCaseExpectTests = [
         ("testExpect", testExpect),
-        ("testExpectDeprecated", testExpectDeprecated),
-        ("testExpectWillFulfill", testExpectWillFulfill),
-        ("testExpectWillNotFulfill", testExpectWillNotFulfill),
     ]
 }
 

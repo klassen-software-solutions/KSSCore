@@ -53,13 +53,7 @@ public extension String {
             if let data = self.data(using: .utf8) {
                 file.write(data)
             } else {
-#if canImport(os)
-                if #available(OSX 10.14, *) {
-                    os_log(.error, "Could not convert string to UTF8 data")
-                } else {
-                    // quietly ignorted on older oses
-                }
-#endif
+                os_log("Could not convert string to UTF8 data")
             }
         } else {
             try self.write(to: url, atomically: true, encoding: .utf8)

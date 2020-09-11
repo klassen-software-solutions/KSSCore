@@ -9,7 +9,6 @@ import XCTest
 import KSSFoundation
 
 
-@available(OSX 10.12, *)
 class StringExtensionTests: XCTestCase {
 
     let fileManager = FileManager.default
