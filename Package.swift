@@ -17,7 +17,7 @@ let package = Package(
     targets: [
         .target(name: "KSSFoundation", dependencies: []),
         .target(name: "KSSTest", dependencies: []),
-        .testTarget(name: "KSSFoundationTests", dependencies: ["KSSFoundation"]),
+        .testTarget(name: "KSSFoundationTests", dependencies: ["KSSFoundation", "KSSTest"]),
         .testTarget(name: "KSSTestTests", dependencies: ["KSSTest"]),
     ]
 )
