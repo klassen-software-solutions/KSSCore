@@ -51,11 +51,6 @@ public class FileSystemWatcher {
          Specifies the type of the event.
          */
         public enum EventType: Equatable {
-            /// An event occurred, but we could not identify its type. This should never occur.
-            /// If it does occur, the rawFlags are the underlying FSEventStreamEventFlags from
-            /// which we could not identify the event.
-            case unknown(rawFlags: FSEventStreamEventFlags)
-
             /// A fake event that indicates the need to rescan the event directory and its subdirectories.
             /// `userDropped` and/or `kernelDropped` will be specified and may be used to help
             /// determine the cause of the problem.
@@ -87,17 +82,14 @@ public class FileSystemWatcher {
             /// This event type will only be seen if `Flags.fileEvents` was specified.
             case modified
 
-            /// An item's inode metadata was modified.
+            /// An item's metadata was modified.
             /// This event type will only be seen if `Flags.fileEvents` was specified.
-            case inodeMetaModified
+            case metadataModified(inode: Bool, finder: Bool, xAttributes: Bool)
 
-            /// An item's finder information was modified.
+            /// An item was cloned.
             /// This event type will only be seen if `Flags.fileEvents` was specified.
-            case finderInfoModified
-
-            /// An item's extended attributes were modified.
-            /// This event type will only be seen if `Flags.fileEvents` was specified.
-            case xAttributesModified
+            @available(OSX 10.13, *)
+            case cloned
 
             /// An item's ownership was changed.
             /// This event type will only be seen if `Flags.fileEvents` was specified.
@@ -124,14 +116,26 @@ public class FileSystemWatcher {
         /// The url of the item involved.
         public let url: URL
 
-        /// The type of the event.
-        public let eventType: EventType
+        /// The raw flags for the event.
+        public var rawFlags: FSEventStreamEventFlags { flags.rawValue }
 
-        /// The type of the item, if appropriate.
-        public let itemType: ItemType?
+        /// The types of the event. Note that there can be more than one. For example, temporary files may
+        /// return created, modified, and removed all in one event.
+        public var eventTypes: [EventType] { flags.eventTypes() }
+
+        /// The types of the item. Note that an item can be more than one type, for example,
+        /// `.file` and `.hardLink`.
+        public var itemTypes: [ItemType] { flags.itemTypes() }
 
         /// True if the event was produced by the current process.
-        public let isOurOwnEvent: Bool
+        public var isOurOwnEvent: Bool { flags.contains(.ownEvent) }
+
+        private let flags: FileEventFlags
+
+        fileprivate init(_ path: String, rawFlags: FSEventStreamEventFlags) {
+            self.url = URL(string: "file:/\(path)")!
+            self.flags = FileEventFlags(rawValue: rawFlags)
+        }
     }
 
     /**
@@ -266,57 +270,59 @@ fileprivate extension FileSystemWatcher.Flags {
     static let eventStreamAdditionalFlags: Self = [.useCFTypes, .markSelf]
 }
 
-fileprivate extension FileSystemWatcher.Event {
-    static func fromRaw(path: String, feFlags: FileEventFlags) -> Self {
-        return Self(url: URL(string: "file:/\(path)")!,
-                    eventType: .fromRaw(feFlags: feFlags),
-                    itemType: .fromRaw(feFlags: feFlags),
-                    isOurOwnEvent: feFlags.contains(.ownEvent))
+extension FileSystemWatcher.Event: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        return """
+            Event(rawFlags: \(self.rawFlags) [\(self.flags)])
+                  url: \(self.url)
+                  eventTypes: \(self.eventTypes)
+                  itemTypes: \(self.itemTypes)
+                  isOurOwnEvent: \(self.isOurOwnEvent)
+            """
     }
 }
 
-fileprivate extension FileSystemWatcher.Event.EventType {
-    static func fromRaw(feFlags: FileEventFlags) -> Self {
-        if feFlags.contains(.mustScanSubDirs) {
-            return .mustRescan(userDropped: feFlags.contains(.userDropped),
-                               kernelDropped: feFlags.contains(.kernelDropped))
-        } else if feFlags.contains(.rootChanged) {
-            return .rootChanged
-        } else if feFlags.contains(.mount) {
-            return .mounted
-        } else if feFlags.contains(.unmount) {
-            return .unmounted
-        } else if feFlags.contains(.itemCreated) {
-            return .created
-        } else if feFlags.contains(.itemRemoved) {
-            return .removed
-        } else if feFlags.contains(.itemRenamed) {
-            return .renamed
-        } else if feFlags.contains(.itemModified) {
-            return .modified
-        } else if feFlags.contains(.itemInodeMetaMod) {
-            return .inodeMetaModified
-        } else if feFlags.contains(.itemFinderInfoMod) {
-            return .finderInfoModified
-        } else if feFlags.contains(.itemXattrMod) {
-            return .xAttributesModified
+extension FileSystemWatcher.Event.EventType: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        switch self {
+        case .mustRescan(let userDropped, let kernelDropped):
+            return ".mustRescan(userDropped: \(userDropped), kernelDropped: \(kernelDropped))"
+        case .rootChanged:
+            return ".rootChanged"
+        case .mounted:
+            return ".mounted"
+        case .unmounted:
+            return ".unmounted"
+        case .created:
+            return ".created"
+        case .removed:
+            return ".removed"
+        case .renamed:
+            return ".renamed"
+        case .modified:
+            return ".modified"
+        case .metadataModified(let inode, let finder, let xAttributes):
+            return ".metadataModified(inode: \(inode), finder: \(finder), xAttributes: \(xAttributes))"
+        case .cloned:
+            return ".cloned"
+        case .ownerChanged:
+            return ".ownerChanged"
         }
-        return .unknown(rawFlags: feFlags.rawValue)
     }
 }
 
-fileprivate extension FileSystemWatcher.Event.ItemType {
-    static func fromRaw(feFlags: FileEventFlags) -> Self? {
-        if feFlags.contains(.itemIsFile) {
-            return .file
-        } else if feFlags.contains(.itemIsDir) {
-            return .directory
-        } else if feFlags.contains(.itemIsSymlink) {
-            return .symbolicLink
-        } else if feFlags.contains(.itemIsHardLink) {
-            return .hardLink(isLastHardLink: feFlags.contains(.itemIsLastHardLink))
+extension FileSystemWatcher.Event.ItemType: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        switch self {
+        case .file:
+            return ".file"
+        case .directory:
+            return ".directory"
+        case .symbolicLink:
+            return ".symbolicLink"
+        case .hardLink(let isLastHardLink):
+            return ".hardLink(isLastHardLink: \(isLastHardLink))"
         }
-        return nil
     }
 }
 
@@ -370,25 +376,22 @@ class EventStream {
     {
         self.paths = urls.map { $0.path }
         self.handler = handler
-        print("!! paths: \(self.paths)")
 
         let combinedFlags = flags.union(.eventStreamAdditionalFlags)
-        print("!! flags: \(flags)")
-        print("!! combined flags: \(combinedFlags)")
         var context = FSEventStreamContext()
         context.info = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
-        fsStreamRef = FSEventStreamCreate(nil,
+        let possibleStream = FSEventStreamCreate(nil,
                                                  fsCallback,
                                                  &context,
                                                  paths as CFArray,
                                                  FSEventStreamEventId(kFSEventStreamEventIdSinceNow),
                                                  latency,
                                                  combinedFlags.rawValue)
-//        guard possibleStream != nil else {
-//            throw FileSystemWatcher.Error.couldNotCreateEventStream
-//        }
+        guard possibleStream != nil else {
+            throw FileSystemWatcher.Error.couldNotCreateEventStream
+        }
 
-//        fsStreamRef = possibleStream
+        fsStreamRef = possibleStream
         FSEventStreamScheduleWithRunLoop(fsStreamRef,
                                          CFRunLoopGetCurrent(),
                                          CFRunLoopMode.defaultMode.rawValue)
@@ -398,7 +401,6 @@ class EventStream {
     }
 
     deinit {
-        print("!! deinit")
         if let stream = fsStreamRef {
             FSEventStreamStop(stream)
             FSEventStreamInvalidate(stream)
@@ -414,14 +416,12 @@ fileprivate func fsCallback(_ stream: ConstFSEventStreamRef,
                             _ eventFlags: UnsafePointer<FSEventStreamEventFlags>,
                             _ eventIDs: UnsafePointer<FSEventStreamEventId>)
 {
-    print("!! fsCallback")
     let eventStream = unsafeBitCast(clientCallbackInfo, to: EventStream.self)
     let paths = unsafeBitCast(eventPaths, to: NSArray.self)
 
     var events = [FileSystemWatcher.Event]()
     for i in 0 ..< numEvents {
-        let feFlags = FileEventFlags(rawValue: eventFlags[i])
-        events.append(.fromRaw(path: paths[i] as! String, feFlags: feFlags))
+        events.append(.init(paths[i] as! String, rawFlags: eventFlags[i]))
     }
 
     if !events.isEmpty {
@@ -429,16 +429,20 @@ fileprivate func fsCallback(_ stream: ConstFSEventStreamRef,
     }
 }
 
-fileprivate struct FileEventFlags: OptionSet {
+fileprivate struct FileEventFlags: OptionSet, CustomDebugStringConvertible {
     let rawValue: FSEventStreamEventFlags
 
     init(rawValue: FSEventStreamEventFlags) {
         self.rawValue = rawValue
     }
 
-    private init(_ value: Int) {
+    init(_ value: Int) {
         self.init(rawValue: FSEventStreamEventFlags(value))
     }
+
+    static let none = FileEventFlags(kFSEventStreamEventFlagNone)
+    static let eventIdsWrapped = FileEventFlags(kFSEventStreamEventFlagEventIdsWrapped)
+    static let historyDone = FileEventFlags(kFSEventStreamEventFlagHistoryDone)
 
     static let mustScanSubDirs = FileEventFlags(kFSEventStreamEventFlagMustScanSubDirs)
     static let userDropped = FileEventFlags(kFSEventStreamEventFlagUserDropped)
@@ -457,6 +461,9 @@ fileprivate struct FileEventFlags: OptionSet {
     static let itemFinderInfoMod = FileEventFlags(kFSEventStreamEventFlagItemFinderInfoMod)
     static let itemXattrMod = FileEventFlags(kFSEventStreamEventFlagItemXattrMod)
 
+    @available(OSX 10.13, *)
+    static let itemCloned = FileEventFlags(kFSEventStreamEventFlagItemCloned)
+
     static let itemChangeOwner = FileEventFlags(kFSEventStreamEventFlagItemChangeOwner)
 
     static let itemIsFile = FileEventFlags(kFSEventStreamEventFlagItemIsFile)
@@ -466,4 +473,140 @@ fileprivate struct FileEventFlags: OptionSet {
     static let itemIsLastHardLink = FileEventFlags(kFSEventStreamEventFlagItemIsLastHardlink)
 
     static let ownEvent = FileEventFlags(kFSEventStreamEventFlagOwnEvent)
+
+    func eventTypes() -> [FileSystemWatcher.Event.EventType] {
+        var types = [FileSystemWatcher.Event.EventType]()
+        if self.contains(.mustScanSubDirs) {
+            types.append(.mustRescan(userDropped: self.contains(.userDropped),
+                                     kernelDropped: self.contains(.kernelDropped)))
+        }
+        if self.contains(.rootChanged) {
+            types.append(.rootChanged)
+        }
+        if self.contains(.mount) {
+            types.append(.mounted)
+        }
+        if self.contains(.unmount) {
+            types.append(.unmounted)
+        }
+        if self.contains(.itemCreated) {
+            types.append(.created)
+        }
+        if self.contains(.itemRemoved) {
+            types.append(.removed)
+        }
+        if self.contains(.itemRenamed) {
+            types.append(.renamed)
+        }
+        if self.contains(.itemModified) {
+            types.append(.modified)
+        }
+        if self.contains(.itemInodeMetaMod) || self.contains(.itemFinderInfoMod) || self.contains(.itemXattrMod) {
+            types.append(.metadataModified(inode: self.contains(.itemInodeMetaMod),
+                                           finder: self.contains(.itemFinderInfoMod),
+                                           xAttributes: self.contains(.itemXattrMod)))
+        }
+        if #available(OSX 10.13, *) {
+            if self.contains(.itemCloned) {
+                types.append(.cloned)
+            }
+        }
+        if self.contains(.itemChangeOwner) {
+            types.append(.ownerChanged)
+        }
+        return types
+    }
+
+    func itemTypes() -> [FileSystemWatcher.Event.ItemType] {
+        var types = [FileSystemWatcher.Event.ItemType]()
+        if self.contains(.itemIsFile) {
+            types.append(.file)
+        }
+        if self.contains(.itemIsDir) {
+            types.append(.directory)
+        }
+        if self.contains(.itemIsSymlink) {
+            types.append(.symbolicLink)
+        }
+        if self.contains(.itemIsHardLink) {
+            types.append(.hardLink(isLastHardLink: self.contains(.itemIsLastHardLink)))
+        }
+        return types
+    }
+
+    public var debugDescription: String {
+        if self == .none {
+            return "None"
+        }
+
+        var strings = [String]()
+        if (self.contains(.mustScanSubDirs)) {
+            strings.append("MustScanSubDirs")
+        }
+        if (self.contains(.userDropped)) {
+            strings.append("UserDropped")
+        }
+        if (self.contains(.kernelDropped)) {
+            strings.append("KernelDropped")
+        }
+        if (self.contains(.eventIdsWrapped)) {
+            strings.append("EventIdsWrapped")
+        }
+        if (self.contains(.historyDone)) {
+            strings.append("HistoryDone")
+        }
+        if (self.contains(.rootChanged)) {
+            strings.append("RootChanged")
+        }
+        if (self.contains(.mount)) {
+            strings.append("Mount")
+        }
+        if (self.contains(.unmount)) {
+            strings.append("Unmount")
+        }
+        if (self.contains(.itemCreated)) {
+            strings.append("ItemCreated")
+        }
+        if (self.contains(.itemRemoved)) {
+            strings.append("ItemRemoved")
+        }
+        if (self.contains(.itemInodeMetaMod)) {
+            strings.append("ItemInodeMetaMod")
+        }
+        if (self.contains(.itemRenamed)) {
+            strings.append("ItemRenamed")
+        }
+        if (self.contains(.itemModified)) {
+            strings.append("ItemModified")
+        }
+        if (self.contains(.itemFinderInfoMod)) {
+            strings.append("ItemFinderInfoMod")
+        }
+        if (self.contains(.itemChangeOwner)) {
+            strings.append("ItemChangeOwner")
+        }
+        if (self.contains(.itemXattrMod)) {
+            strings.append("ItemXattrMod")
+        }
+        if (self.contains(.itemIsFile)) {
+            strings.append("ItemIsFile")
+        }
+        if (self.contains(.itemIsDir)) {
+            strings.append("ItemIsDirectory")
+        }
+        if (self.contains(.itemIsSymlink)) {
+            strings.append("ItemIsSymLink")
+        }
+        if (self.contains(.itemIsHardLink)) {
+            strings.append("ItemIsHardLink")
+        }
+        if (self.contains(.itemIsLastHardLink)) {
+            strings.append("ItemIsLastHardLink")
+        }
+        if (self.contains(.ownEvent)) {
+            strings.append("OwnEvent")
+        }
+
+        return strings.joined(separator: ",")
+    }
 }

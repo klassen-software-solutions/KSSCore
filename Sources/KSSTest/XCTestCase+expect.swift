@@ -13,30 +13,42 @@ import XCTest
 /**
  Expectation Methods
 
- This extension adds methods making it simpler to work with simple expectations. Essentially they allow
- you to place your code in a lambda, and call the necessary `fulfill` method on the `expectation`
- that is passed to your lambda. This allows you to use the expectations without having to manually
- create and remove them.
+ This extension adds a method making it simpler to work with expectations by automating the
+ `waitForExpectations` call.
  */
 public extension XCTestCase {
     /**
-     Assert that an expectation will be fulfilled a specific number of times within a given time interval.
+     Assert that all expectations created within the lambda will be fulfilled within the given
+     timeout. This is a convenience method that allows you to place all your expectations
+     and related code in a block and have `waitForExpectations` called for you
+     automatically.
+     */
+    func expect(within timeout: TimeInterval = 1.0, _ lambda: () -> Void) {
+        lambda()
+        waitForExpectations(timeout: timeout, handler: nil)
+    }
+
+    /**
+     Creates a single unnamed expectation and calls `expect(within:...`.
      - note: The lambda you provide should call the expectation `fulfill` method.
      */
+    @available(*, deprecated, message: "Use expect(within:_) instead")
     func expect(willFulfill fulfillmentCount: Int,
                 within timeout: TimeInterval = 1.0,
                 _ lambda: (XCTestExpectation) -> Void)
     {
-        let expectation = XCTestExpectation()
-        expectation.expectedFulfillmentCount = fulfillmentCount
-        lambda(expectation)
-        wait(for: [expectation], timeout: timeout)
+        expect(within: timeout) {
+            let expectation = self.expectation(description: "unnamed")
+            expectation.expectedFulfillmentCount = fulfillmentCount
+            lambda(expectation)
+        }
     }
 
     /**
-     Assert that an expectation will be fulfilled within a given time interval.
+     Creates a single unnamed expectation and calls `expect(within:...`.
      - note: The lambda you provide should call the expectation `fulfill` method.
      */
+    @available(*, deprecated, message: "Use expect(within:_) instead")
     func expectWillFulfill(within timeout: TimeInterval = 1.0,
                            _ lambda: (XCTestExpectation) -> Void)
     {
@@ -44,22 +56,25 @@ public extension XCTestCase {
     }
 
     /**
-     Assert that an expectation will not be fulfilled a specific number of times within a given time interval.
+     Creates a single unnamed expectation, inverts it, and calls `expect(within:...`.
      */
+    @available(*, deprecated, message: "Use expect(within:_) instead")
     func expect(willNotFulfill fulfillmentCount: Int,
                 within timeout: TimeInterval = 1.0,
                 _ lambda: (XCTestExpectation) -> Void)
     {
-        let expectation = XCTestExpectation()
-        expectation.expectedFulfillmentCount = fulfillmentCount
-        expectation.isInverted = true
-        lambda(expectation)
-        wait(for: [expectation], timeout: timeout)
+        expect(within: timeout) {
+            let expectation = self.expectation(description: "unnamed")
+            expectation.expectedFulfillmentCount = fulfillmentCount
+            expectation.isInverted = true
+            lambda(expectation)
+        }
     }
 
     /**
      Assert that an expectation will not be fulfilled within a given time interval.
      */
+    @available(*, deprecated, message: "Use expect(within:_) instead")
     func expectWillNotFulfill(within timeout: TimeInterval = 1.0,
                               _ lambda: (XCTestExpectation) -> Void)
     {

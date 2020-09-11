@@ -17,6 +17,7 @@ class FileSystemWatcherTests: XCTestCase {
     let fileManager = FileManager.default
     var directory: URL? = nil
     var watcherId: UUID? = nil
+    var watcherId2: UUID? = nil
 
     override func setUp() {
         directory = try! fileManager.createTemporaryDirectory(withPrefix: "FileSystemWatcherTests")
@@ -26,6 +27,11 @@ class FileSystemWatcherTests: XCTestCase {
         if let watcherId = watcherId {
             watcher.stopWatching(watcherId)
             self.watcherId = nil
+        }
+
+        if let watcherId = watcherId2 {
+            watcher.stopWatching(watcherId)
+            self.watcherId2 = nil
         }
 
         if let directory = directory {
@@ -39,7 +45,7 @@ class FileSystemWatcherTests: XCTestCase {
         // output log. Enable the test and run it if you want to perform manual
         // tests. But don't check it in with this test enabled as this test
         // contains an infinite loop.
-        //try XCTSkipIf(true)
+        try XCTSkipIf(true)
 
         watcherId = try? watcher.watch(directory!, flags: [.fileEvents, .watchRoot], latency: 0) { events in
             print("received \(events.count) events:")
@@ -48,20 +54,9 @@ class FileSystemWatcherTests: XCTestCase {
             }
         }
 
-        let path = directory!.appendingPathComponent("testfile.dat")
-        print("file: \(path.path)")
-
         while true {
-            print("creating file...")
-            fileManager.createFile(atPath: path.path, contents: nil, attributes: nil)
-            sleep(5)
-
-            print("removing file...")
-            try? fileManager.removeItem(at: path)
-
-            //watcher.flushAll()
-            print("!! waiting...")
-            sleep(5)
+            CFRunLoopRunInMode(CFRunLoopMode.defaultMode, 10, true);
+            print("waiting...")
         }
     }
 
@@ -91,79 +86,153 @@ class FileSystemWatcherTests: XCTestCase {
         assertTrue { watcher.streams.isEmpty }
     }
 
-    func testThatFileCreationIsObserved1() {
-        var expectation: XCTestExpectation? = self.expectation(description: "File creation should trigger event")
-        watcherId = try! watcher.watch(directory!, flags: .fileEvents) { events in
-            for event in events {
-                print("event: \(event)")
-                if event.eventType == .created {
-                    expectation?.fulfill()
-                    expectation = nil
-                    break
-                }
-            }
-        }
-        let filePath = directory!.appendingPathComponent("testfile.dat").path
-        print("!! filePath: \(filePath)")
-        fileManager.createFile(atPath: filePath, contents: nil, attributes: nil)
-        waitForExpectations(timeout: 2, handler: nil)
-    }
-
-
     func testThatFileCreationIsObserved() throws {
-        print("start of test")
-        expectWillFulfill(within: 5) { expectation in
+        let url = directory!.appendingPathComponent("testfile.dat")
+        expect(within: 0.1) {
+            let expectation = self.expectation(description: "File creation should trigger event")
             watcherId = try? watcher.watch(directory!, flags: [.noDefer, .fileEvents], latency: 0) { events in
-                print("111")
                 for event in events {
-                    print("event: \(event)")
-                    if event.eventType == .created {
+                    if event.url.path == url.path && (event.eventTypes.contains(.created) || event.eventTypes.contains(.renamed)) {
+                        self.assertTrue { event.itemTypes.contains(.file) }
+                        self.assertTrue { event.isOurOwnEvent }
                         expectation.fulfill()
                         break
                     }
                 }
             }
             assertEqual(to: 1) { watcher.streams.count }
-
-            let path = directory!.appendingPathComponent("testfile.dat")
-            print("creating file: \(path)")
-            fileManager.createFile(atPath: path.absoluteString, contents: nil, attributes: nil)
+            fileManager.createFile(atPath: url.path, contents: nil, attributes: nil)
         }
     }
 
     func testThatFileDeletionIsObserved() throws {
-        expectWillFulfill { expectation in
-            let path = directory!.appendingPathComponent("testfile.dat")
-            fileManager.createFile(atPath: path.absoluteString, contents: nil, attributes: nil)
+        expect {
+            let expectation = self.expectation(description: "File deletion should trigger event")
+            let url = directory!.appendingPathComponent("testfile.dat")
+            fileManager.createFile(atPath: url.path, contents: nil, attributes: nil)
 
             watcherId = try? watcher.watch(directory!, flags: [.noDefer, .fileEvents]) { events in
                 for event in events {
-                    if event.eventType == .removed {
+                    if event.eventTypes.contains(.removed) {
+                        self.assertEqual(to: url.path) { event.url.path }
+                        self.assertTrue { event.itemTypes.contains(.file) }
+                        self.assertTrue { event.isOurOwnEvent }
                         expectation.fulfill()
                         break
                     }
                 }
             }
-
-            try? fileManager.removeItem(at: path)
+            assertEqual(to: 1) { watcher.streams.count }
+            try? fileManager.removeItem(at: url)
         }
     }
 
     func testThatFileChangesAreObserved() throws {
-        expectWillFulfill { expectation in
-            let path = directory!.appendingPathComponent("testfile.dat")
-            fileManager.createFile(atPath: path.absoluteString, contents: nil, attributes: nil)
+        expect {
+            var somethingWasModified: XCTestExpectation? = self.expectation(description: "Something should be modified")
+            var wasRenamed: XCTestExpectation? = self.expectation(description: "Modified file is renamed to our name")
+            let url = directory!.appendingPathComponent("testfile.dat")
+            fileManager.createFile(atPath: url.path, contents: nil, attributes: nil)
 
             watcherId = try? watcher.watch(directory!, flags: [.noDefer, .fileEvents]) { events in
                 for event in events {
-                    if event.eventType == .modified {
+                    if event.eventTypes.contains(.modified) {
+                        self.assertTrue { event.eventTypes.contains(.metadataModified(inode: false, finder: false, xAttributes: true)) }
+                        self.assertTrue { event.isOurOwnEvent }
+                        somethingWasModified?.fulfill()
+                        somethingWasModified = nil
+                    }
+                    if event.eventTypes.contains(.renamed) && event.url.path == url.path {
+                        self.assertTrue { event.isOurOwnEvent }
+                        wasRenamed?.fulfill()
+                        wasRenamed = nil
+                    }
+                }
+            }
+            assertEqual(to: 1) { watcher.streams.count }
+            try? "This is a change".write(to: url, atomically: true, encoding: .utf8)
+        }
+    }
+
+    func testThatWeCanIgnoreOurOwnEvents() throws {
+        let url = directory!.appendingPathComponent("testfile.dat")
+        expect(within: 0.1) {
+            let expectation = self.expectation(description: "File creation should trigger event")
+            expectation.isInverted = true
+            watcherId = try? watcher.watch(directory!, flags: [.noDefer, .ignoreSelf, .fileEvents], latency: 0) { events in
+                for event in events {
+                    if event.url.path == url.path && (event.eventTypes.contains(.created) || event.eventTypes.contains(.renamed)) {
                         expectation.fulfill()
                         break
                     }
                 }
             }
+            assertEqual(to: 1) { watcher.streams.count }
+            fileManager.createFile(atPath: url.path, contents: nil, attributes: nil)
+        }
+    }
 
-            try? "This is a change".write(to: path, atomically: true, encoding: .utf8)
+    func testThatRootDirectoryIsObserved() throws {
+        expect {
+            let expectation = self.expectation(description: "Root directory removal should trigger event")
+            watcherId = try? watcher.watch(directory!, flags: [.noDefer, .watchRoot], latency: 0) { events in
+                for event in events {
+                    if event.eventTypes.contains(.rootChanged) {
+                        expectation.fulfill()
+                        break
+                    }
+                }
+            }
+            assertEqual(to: 1) { watcher.streams.count }
+            try! fileManager.trashItem(at: self.directory!, resultingItemURL: nil)
+            self.directory = nil
+        }
+    }
+
+    func testThatRootDirectoryIsNotObserved() throws {
+        expect(within: 0.1) {
+            let expectation = self.expectation(description: "Root directory removal should not trigger event")
+            expectation.isInverted = true
+            watcherId = try? watcher.watch(directory!, flags: [.noDefer], latency: 0) { events in
+                for event in events {
+                    if event.eventTypes.contains(.rootChanged) {
+                        expectation.fulfill()
+                        break
+                    }
+                }
+            }
+            assertEqual(to: 1) { watcher.streams.count }
+            try! fileManager.trashItem(at: self.directory!, resultingItemURL: nil)
+            self.directory = nil
+        }
+    }
+
+    func testMultipleWatchers() throws {
+        expect(within: 0.1) {
+            let shouldNotTrigger = self.expectation(description: "Root directory removal should not trigger event")
+            shouldNotTrigger.isInverted = true
+            watcherId = try? watcher.watch(directory!, flags: [.noDefer], latency: 0) { events in
+                for event in events {
+                    if event.eventTypes.contains(.rootChanged) {
+                        shouldNotTrigger.fulfill()
+                        break
+                    }
+                }
+            }
+
+            let shouldTrigger = self.expectation(description: "Root directory removal should trigger event")
+            watcherId2 = try? watcher.watch(directory!, flags: [.noDefer, .watchRoot], latency: 0) { events in
+                for event in events {
+                    if event.eventTypes.contains(.rootChanged) {
+                        shouldTrigger.fulfill()
+                        break
+                    }
+                }
+            }
+
+            assertEqual(to: 2) { watcher.streams.count }
+            try! fileManager.trashItem(at: self.directory!, resultingItemURL: nil)
+            self.directory = nil
         }
     }
 }
