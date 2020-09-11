@@ -5,9 +5,12 @@
 //  Created by Steven W. Klassen on 2020-09-09.
 //
 
+import XCTest
+
+#if os(macOS) || os(iOS)
+
 import Foundation
 import KSSTest
-import XCTest
 
 @testable import KSSFoundation
 
@@ -236,3 +239,21 @@ class FileSystemWatcherTests: XCTestCase {
         }
     }
 }
+
+#else
+
+// "Dummy" version needed for Linux since the auto-building of XCTestManifests.swift
+// is taking place on the Mac and doesn't know to ignore these tests.
+class FileSystemWatcherTests: XCTestCase {
+    func testManually() throws {}
+    func testInvalidWatches() throws {}
+    func testThatFileCreationIsObserved() throws {}
+    func testThatFileDeletionIsObserved() throws {}
+    func testThatFileChangesAreObserved() throws {}
+    func testThatWeCanIgnoreOurOwnEvents() throws {}
+    func testThatRootDirectoryIsObserved() throws {}
+    func testThatRootDirectoryIsNotObserved() throws {}
+    func testMultipleWatchers() throws {}
+}
+
+#endif
