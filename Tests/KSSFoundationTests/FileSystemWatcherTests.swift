@@ -7,7 +7,7 @@
 
 import XCTest
 
-#if os(macOS) || os(iOS)
+#if os(macOS) 
 
 import Foundation
 import KSSTest

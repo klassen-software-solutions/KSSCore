@@ -5,7 +5,7 @@
 //  Created by Steven W. Klassen on 2020-09-09.
 //
 
-#if os(macOS) || os(iOS)
+#if os(macOS)
 
 import os
 import Foundation
@@ -14,7 +14,7 @@ import Foundation
  This is a wrapper around the File System Events portion of the Core Services. It allows you to easily
  watch for changes in the file system.
 
- - note: This class is not available in Linux
+ - note: This class is not available in Linux or iOS
  */
 public class FileSystemWatcher {
 
