@@ -46,6 +46,7 @@ extension DurationTests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__DurationTests = [
+        ("testCalendarBasedDuration", testCalendarBasedDuration),
         ("testMultiples", testMultiples),
         ("testUnitaryValues", testUnitaryValues),
     ]
