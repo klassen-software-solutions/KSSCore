@@ -28,6 +28,9 @@ public func duration(_ count: Double, _ unit: DurationUnit) -> TimeInterval {
  assuming the given starting time and will take into account the correct calendar information in terms
  of days of the month and so on. If the calendar cannot compute an appropriate interval, then `nil` is
  returned.
+ - warning: This uses the user's current calendar for the computation. This may lead to slightly
+ different results for different calendars. For example, crossing daylight savings time gives answers
+ that differ by an hour for calendars that take daylight savings into account.
  */
 public func duration(_ count: Int, _ unit: DurationUnit, from start: Date = Date()) -> TimeInterval? {
     var component = DateComponents()
