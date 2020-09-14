@@ -94,7 +94,8 @@ class FileSystemWatcherTests: XCTestCase {
             let expectation = self.expectation(description: "File creation should trigger event")
             watcherId = try? watcher.watch(directory!, flags: [.noDefer, .fileEvents], latency: 0) { events in
                 for event in events {
-                    if event.url.path == url.path && (event.eventTypes.contains(.created) || event.eventTypes.contains(.renamed)) {
+                    let eventPath = fixPathOnMac(event.url.path)
+                    if eventPath == url.path && (event.eventTypes.contains(.created) || event.eventTypes.contains(.renamed)) {
                         self.assertTrue { event.itemTypes.contains(.file) }
                         self.assertTrue { event.isOurOwnEvent }
                         expectation.fulfill()
@@ -116,7 +117,8 @@ class FileSystemWatcherTests: XCTestCase {
             watcherId = try? watcher.watch(directory!, flags: [.noDefer, .fileEvents]) { events in
                 for event in events {
                     if event.eventTypes.contains(.removed) {
-                        self.assertEqual(to: url.path) { event.url.path }
+                        let eventPath = fixPathOnMac(event.url.path)
+                        self.assertEqual(to: url.path) { eventPath }
                         self.assertTrue { event.itemTypes.contains(.file) }
                         self.assertTrue { event.isOurOwnEvent }
                         expectation.fulfill()
@@ -138,13 +140,14 @@ class FileSystemWatcherTests: XCTestCase {
 
             watcherId = try? watcher.watch(directory!, flags: [.noDefer, .fileEvents]) { events in
                 for event in events {
+                    let eventPath = fixPathOnMac(event.url.path)
                     if event.eventTypes.contains(.modified) {
                         self.assertTrue { event.eventTypes.contains(.metadataModified(inode: false, finder: false, xAttributes: true)) }
                         self.assertTrue { event.isOurOwnEvent }
                         somethingWasModified?.fulfill()
                         somethingWasModified = nil
                     }
-                    if event.eventTypes.contains(.renamed) && event.url.path == url.path {
+                    if event.eventTypes.contains(.renamed) && eventPath == url.path {
                         self.assertTrue { event.isOurOwnEvent }
                         wasRenamed?.fulfill()
                         wasRenamed = nil
@@ -243,6 +246,17 @@ class FileSystemWatcherTests: XCTestCase {
         let flags = FSEventStreamEventFlags(kFSEventStreamEventFlagItemCreated | kFSEventStreamEventFlagItemIsFile)
         _ = FileSystemWatcher.Event.init("/tmp/name with whitespace.txt", rawFlags: flags)
     }
+}
+
+fileprivate func fixPathOnMac(_ path: String) -> String {
+    // This is needed for some test comparisons since FileManager.createTemporaryDirectory
+    // returns a value with the prefix "/var/" while the file system monitoring code
+    // returns the value with the prefix "/private/var/", both of which refer to the
+    // same actual location in the file system.
+    if path.hasPrefix("/private/var/") {
+        return String(path.dropFirst("/private".count))
+    }
+    return path
 }
 
 #else

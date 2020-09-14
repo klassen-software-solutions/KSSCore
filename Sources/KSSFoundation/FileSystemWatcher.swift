@@ -417,7 +417,6 @@ fileprivate func fsCallback(_ stream: ConstFSEventStreamRef,
 
     var events = [FileSystemWatcher.Event]()
     for i in 0 ..< numEvents {
-        print("!! path: \(paths[i])")
         events.append(.init(paths[i] as! String, rawFlags: eventFlags[i]))
     }
 
