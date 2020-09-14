@@ -136,8 +136,10 @@ public class FileSystemWatcher {
 
         private let flags: FileEventFlags
 
-        fileprivate init(_ path: String, rawFlags: FSEventStreamEventFlags) {
-            self.url = URL(string: "file:/\(path)")!
+        internal init(_ path: String, rawFlags: FSEventStreamEventFlags) {
+            let flags = FileEventFlags(rawValue: rawFlags)
+            let isDirectory = flags.contains(.itemIsDir)
+            self.url = URL(fileURLWithPath: path, isDirectory: isDirectory)
             self.flags = FileEventFlags(rawValue: rawFlags)
         }
     }
@@ -415,6 +417,7 @@ fileprivate func fsCallback(_ stream: ConstFSEventStreamRef,
 
     var events = [FileSystemWatcher.Event]()
     for i in 0 ..< numEvents {
+        print("!! path: \(paths[i])")
         events.append(.init(paths[i] as! String, rawFlags: eventFlags[i]))
     }
 

@@ -237,6 +237,12 @@ class FileSystemWatcherTests: XCTestCase {
             self.directory = nil
         }
     }
+
+    func testEventCreation() throws {
+        // The test is that this code does not die on a `nil` value.
+        let flags = FSEventStreamEventFlags(kFSEventStreamEventFlagItemCreated | kFSEventStreamEventFlagItemIsFile)
+        _ = FileSystemWatcher.Event.init("/tmp/name with whitespace.txt", rawFlags: flags)
+    }
 }
 
 #else
@@ -253,6 +259,7 @@ class FileSystemWatcherTests: XCTestCase {
     func testThatRootDirectoryIsObserved() throws {}
     func testThatRootDirectoryIsNotObserved() throws {}
     func testMultipleWatchers() throws {}
+    func testEventCreation() throws {}
 }
 
 #endif
