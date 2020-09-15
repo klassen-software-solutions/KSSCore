@@ -20,7 +20,6 @@ class FileManagerExtensionTests: XCTestCase {
         XCTAssertTrue(fm.directoryExists(at: URL(string: ".")!))
     }
 
-    @available(OSX 10.12, *)
     func testCreateTemporaryDirectory() {
         let url = try? fm.createTemporaryDirectory()
         XCTAssertNotNil(url)

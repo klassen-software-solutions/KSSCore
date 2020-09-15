@@ -6,11 +6,17 @@
 //  Copyright © 2020 Klassen Software Solutions. All rights reserved.
 //
 
+#if canImport(os)
+import os
+#endif
+
 import Foundation
 
 
 /**
  Create a duration of the given units and return it as a `TimeInterval.`
+ - warning: The resulting time interval will be approximate, using the assumptions described
+ for the `DurationUnit`.
  */
 public func duration(_ count: Double, _ unit: DurationUnit) -> TimeInterval {
     return count * unit.rawValue
@@ -18,13 +24,42 @@ public func duration(_ count: Double, _ unit: DurationUnit) -> TimeInterval {
 
 
 /**
+ Create a duration of the given units and return it as a `TimeInterval.` This version creates a duration
+ assuming the given starting time and will take into account the correct calendar information in terms
+ of days of the month and so on. If the calendar cannot compute an appropriate interval, then `nil` is
+ returned.
+ - warning: This uses the user's current calendar for the computation. This may lead to slightly
+ different results for different calendars. For example, crossing daylight savings time gives answers
+ that differ by an hour for calendars that take daylight savings into account.
+ */
+public func duration(_ count: Int, _ unit: DurationUnit, from start: Date = Date()) -> TimeInterval? {
+    var component = DateComponents()
+    switch unit {
+    case .seconds:  component.second = count
+    case .minutes:  component.minute = count
+    case .hours:    component.hour = count
+    case .days:     component.day = count
+    case .weeks:    component.day = count * 7
+    case .months:   component.month = count
+    case .years:    component.year = count
+    }
+
+    guard let newDate = Calendar.current.date(byAdding: component, to: start) else {
+        os_log("warning: could not compute the requested interval, using an approximation")
+        return nil
+    }
+
+    return newDate.timeIntervalSince(start)
+}
+
+/**
  Enumeration to specify the unit of a given duration. The raw value of the enumeration is a TimeInterval
  that specifies the conversion from this unit into seconds.
 
  - warning:
  This conversion is only approximate and does not consider leap years or even the difference between
- months. For example, one year will always be considered 365 days and one month will always be considered
- 30 days. For more accurate durations you will need to use the `Date` and related classes directly.
+ months. Most of the time this will not matter, but if the more accurate conversion fails, these values will
+ be used as a fallback mechanism for generating the interval.
  */
 public enum DurationUnit: TimeInterval {
     /// Conversion of one second to a `TimeInterval`
@@ -38,7 +73,7 @@ public enum DurationUnit: TimeInterval {
 
     /// Conversion of one day to a `TimeInterval`
     case days = 86400.0
-    
+
     /// Conversion of one week to a `TimeInterval`
     case weeks = 604800.0
 

@@ -75,7 +75,6 @@ public extension FileManager {
         - withPrefix: A prefix that will be used for the directory name. Note that this is just the prefix
             of the directory, not the path that leads to the directory.
      */
-    @available(OSX 10.12, *)
     func createTemporaryDirectory(withPrefix prefix: String = "temp_") throws -> URL {
         let directoryName = prefix + UUID().uuidString
         let url = temporaryDirectory.appendingPathComponent(directoryName, isDirectory: true)
