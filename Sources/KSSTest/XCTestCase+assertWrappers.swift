@@ -23,41 +23,41 @@ import XCTest
 public extension XCTestCase {
 
     /// Passes if the expression returns `true`.
-    func assertTrue(file: StaticString = #file, line: UInt = #line, _ expression: () -> Bool) {
-        XCTAssertTrue(expression(), file: file, line: line)
+    func assertTrue(file: StaticString = #file, line: UInt = #line, _ expression: () throws -> Bool) {
+        XCTAssertTrue(try expression(), file: file, line: line)
     }
 
     /// Passes if the expression returns `false`.
-    func assertFalse(file: StaticString = #file, line: UInt = #line, _ expression: () -> Bool) {
-        XCTAssertFalse(expression(), file: file, line: line)
+    func assertFalse(file: StaticString = #file, line: UInt = #line, _ expression: () throws -> Bool) {
+        XCTAssertFalse(try expression(), file: file, line: line)
     }
 
     /// Passes if the expression is equal to the given value.
     func assertEqual<T : Equatable>(to targetValue: T,
                                     file: StaticString = #file,
                                     line: UInt = #line,
-                                    _ expression: () -> T)
+                                    _ expression: () throws -> T)
     {
-        XCTAssertEqual(expression(), targetValue, file: file, line: line)
+        XCTAssertEqual(try expression(), targetValue, file: file, line: line)
     }
 
     /// Passes if the expression is not equal to the given value.
     func assertNotEqual<T : Equatable>(to targetValue: T,
                                        file: StaticString = #file,
                                        line: UInt = #line,
-                                       _ expression: () -> T)
+                                       _ expression: () throws -> T)
     {
-        XCTAssertNotEqual(expression(), targetValue, file: file, line: line)
+        XCTAssertNotEqual(try expression(), targetValue, file: file, line: line)
     }
 
     /// Passes if the expression returns nil.
-    func assertNil(file: StaticString = #file, line: UInt = #line, _ expression: () -> Any?) {
-        XCTAssertNil(expression(), file: file, line: line)
+    func assertNil(file: StaticString = #file, line: UInt = #line, _ expression: () throws -> Any?) {
+        XCTAssertNil(try expression(), file: file, line: line)
     }
 
     /// Passes if the expression does not return nil.
-    func assertNotNil(file: StaticString = #file, line: UInt = #line, _ expression: () -> Any?) {
-        XCTAssertNotNil(expression(), file: file, line: line)
+    func assertNotNil(file: StaticString = #file, line: UInt = #line, _ expression: () throws -> Any?) {
+        XCTAssertNotNil(try expression(), file: file, line: line)
     }
 
     /// Passes if the expression does not throw an error.

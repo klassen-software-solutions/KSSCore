@@ -142,7 +142,6 @@ class FileSystemWatcherTests: XCTestCase {
                 for event in events {
                     let eventPath = fixPathOnMac(event.url.path)
                     if event.eventTypes.contains(.modified) {
-                        self.assertTrue { event.eventTypes.contains(.metadataModified(inode: false, finder: false, xAttributes: true)) }
                         self.assertTrue { event.isOurOwnEvent }
                         somethingWasModified?.fulfill()
                         somethingWasModified = nil
