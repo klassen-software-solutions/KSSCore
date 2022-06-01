@@ -12,5 +12,9 @@ import Foundation
  a struct, to outlive its scope.
  */
 public class Wrapper<Struct> {
+    public init(object: Struct? = nil) {
+        self.object = object
+    }
+
     public var object: Struct? = nil
 }
