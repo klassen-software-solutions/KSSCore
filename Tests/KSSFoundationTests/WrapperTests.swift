@@ -9,7 +9,7 @@ import Foundation
 import KSSTest
 import XCTest
 
-@testable import KSSFoundation
+import KSSFoundation
 
 
 final class WrapperTests: XCTestCase {
