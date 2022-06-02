@@ -40,25 +40,18 @@ public struct InputStreamReader {
      will need to call close at some point.
      */
     public init(_ inputStream: InputStream, withBufferSize bufferSize: Int = 2048) throws {
-        print("!! init")
         inputStream.open()
-        print("!! opened")
         fakeReadToForceAvailableCheck(inputStream)
         self.empty = !inputStream.hasBytesAvailable
-        print("!! isEmpty: \(self.empty)")
         self.bufferSize = bufferSize
         if self.empty {
-            print("!! is empty, closing")
             inputStream.close()
             self.inputStream = nil
             self.buffer = nil
         } else {
-            print("!! is not empty, attempt to read")
             self.inputStream = inputStream
             self.buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
-            print("!! before read next buffer")
             self.bufferCount = try readNextBuffer(inputStream, self.buffer!, bufferSize)
-            print("!! after read next buffer, count=\(self.bufferCount)")
         }
         self.largeStream = self.bufferCount >= bufferSize
     }
@@ -102,6 +95,10 @@ public struct InputStreamReader {
 }
 
 
+// This is needed since inputStream.hasBytesAvailable may return true if no read has been
+// attempted. At the time of this writing the Apple implementation sets it to false for
+// an empty stream, but the swift.org implementation does not. Attempting to read 0 bytes
+// ensures it is set for both.
 fileprivate func fakeReadToForceAvailableCheck(_ inputStream: InputStream) {
     let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: 1)
     _ = inputStream.read(buffer, maxLength: 0)
@@ -112,14 +109,7 @@ fileprivate func readNextBuffer(_ inputStream: InputStream,
                                 _ buffer: UnsafeMutablePointer<UInt8>,
                                 _ bufferSize: Int) throws -> Int
 {
-    print("!! before stream read, available: \(inputStream.hasBytesAvailable)...")
-    _ = inputStream.read(buffer, maxLength: 0)
-    print("!! after fake read, available: \(inputStream.hasBytesAvailable)")
-    guard inputStream.hasBytesAvailable else {
-        return 0
-    }
     let read = inputStream.read(buffer, maxLength: bufferSize)
-    print("!! after stream read, read=\(read)")
     if read < 0 {
         throw inputStream.streamError!
     }
