@@ -41,17 +41,27 @@ public struct InputStreamReader {
      */
     public init(_ inputStream: InputStream, withBufferSize bufferSize: Int = 2048) throws {
         inputStream.open()
-        self.empty = !inputStream.hasBytesAvailable
+        var isEmpty = !inputStream.hasBytesAvailable
         self.bufferSize = bufferSize
-        if self.empty {
+        if isEmpty {
             inputStream.close()
             self.inputStream = nil
             self.buffer = nil
         } else {
-            self.inputStream = inputStream
-            self.buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
-            self.bufferCount = try readNextBuffer(inputStream, self.buffer!, bufferSize)
+            let tempInputStream = inputStream
+            let tempBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
+            self.bufferCount = try readNextBuffer(inputStream, tempBuffer, bufferSize)
+            if self.bufferCount == 0 {
+                inputStream.close()
+                self.inputStream = nil
+                self.buffer = nil
+                isEmpty = true
+            } else {
+                self.inputStream = tempInputStream
+                self.buffer = tempBuffer
+            }
         }
+        self.empty = isEmpty
         self.largeStream = self.bufferCount >= bufferSize
     }
 

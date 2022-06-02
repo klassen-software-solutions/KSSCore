@@ -56,4 +56,11 @@ final class InputStreamReaderTests: XCTestCase {
         }
         assertNil { return try! reader.nextDataBlock() }
     }
+
+    func testBug61EmptyInputStreamNotHandled() throws {
+        let inputStream = InputStream(fileAtPath: "/dev/stdin")
+        let reader = try! InputStreamReader(inputStream!, withBufferSize: 200)
+        defer { reader.close() }
+        assertTrue { reader.empty }
+    }
 }
