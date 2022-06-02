@@ -1,8 +1,8 @@
 //
-//  StringExtension.swift
+//  String+prettyPrint.swift
+//  
 //
-//  Created by Steven W. Klassen on 2020-02-28.
-//  Copyright © 2020 Klassen Software Solutions. All rights reserved.
+//  Created by Steven W. Klassen on 2022-06-02.
 //
 
 import Foundation
@@ -10,56 +10,13 @@ import Foundation
 #if canImport(os)
     import os
 #endif
+
 #if canImport(FoundationXML)
     import FoundationXML
 #endif
 
 
 public extension String {
-
-    /**
-     The full range of the string.
-     */
-    var range: NSRange { NSRange(self.startIndex..., in: self) }
-
-    /**
-     Create a string given the contents of an input stream and its encoding. Note that this will
-     return `nil` if there is an error either in reading from the stream or in the data decoding.
-     */
-    init?(contentsOfStream stream: InputStream, encoding: String.Encoding) {
-        if let data = try? Data(fromInputStream: stream) {
-            self.init(data: data, encoding: encoding)
-        } else {
-            return nil
-        }
-    }
-
-    /**
-     Appends the string to the end of the file specified by `url`. This version automatically adds
-     a newline after the string.
-     */
-    func appendLine(to url: URL) throws {
-        try self.appending("\n").append(to: url)
-    }
-
-    /**
-     Appends the string to the end of the file specified by `url`. This version does not add
-     a newline after the string.
-     */
-    func append(to url: URL) throws {
-        if let file = try? FileHandle(forWritingTo: url) {
-            defer { file.closeFile() }
-            file.seekToEndOfFile()
-            if let data = self.data(using: .utf8) {
-                file.write(data)
-            } else {
-                os_log("Could not convert string to UTF8 data")
-            }
-        } else {
-            try self.write(to: url, atomically: true, encoding: .utf8)
-        }
-    }
-
     /**
      If the string is recognized as something that can be pretty-printed, the result
      will be returned. Otherwise, if not recognized, we return ourself. Currently this will
@@ -86,8 +43,12 @@ public extension String {
     private func prettyPrintJSON() -> String? {
         do {
             if let data = self.data(using: .utf8) {
+                var options: JSONSerialization.WritingOptions = [.prettyPrinted, .sortedKeys]
+                if #available(macOS 10.15, *) {
+                    options = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
+                }
                 let obj = try JSONSerialization.jsonObject(with: data)
-                let newData = try JSONSerialization.data(withJSONObject: obj, options: [.prettyPrinted, .sortedKeys])
+                let newData = try JSONSerialization.data(withJSONObject: obj, options: options)
                 if let newStr = String(data: newData, encoding: .utf8) {
                     return newStr
                 }
@@ -170,12 +131,12 @@ public extension String {
         case "UTF-32", "csUTF32":
             return .utf32
         case "US-ASCII", "iso-ir-6", "ANSI_X3.4-1968", "ANSI_X3.4-1986", "ISO_646.irv:1991",
-             "ISO646-US", "us", "IBM367", "cp367", "csASCII":
+            "ISO646-US", "us", "IBM367", "cp367", "csASCII":
             return .ascii
         case "ISO-2022-JP", "csISO2022JP":
             return .iso2022JP
         case "iso-ir-100", "ISO_8859-1", "ISO-8859-1", "latin1", "l1", "IBM819",
-             "CP819", "csISOLatin1":
+            "CP819", "csISOLatin1":
             return .isoLatin1
         case "iso-ir-101", "ISO_8859-2", "ISO-8859-2", "latin2", "l2", "csISOLatin2":
             return .isoLatin2
