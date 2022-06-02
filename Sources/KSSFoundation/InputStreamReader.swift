@@ -43,34 +43,23 @@ public struct InputStreamReader {
         print("!! init")
         inputStream.open()
         print("!! opened")
-        var isEmpty = !inputStream.hasBytesAvailable
-        print("!! isEmpty: \(isEmpty)")
+        fakeReadToForceAvailableCheck(inputStream)
+        self.empty = !inputStream.hasBytesAvailable
+        print("!! isEmpty: \(self.empty)")
         self.bufferSize = bufferSize
-        if isEmpty {
+        if self.empty {
             print("!! is empty, closing")
             inputStream.close()
             self.inputStream = nil
             self.buffer = nil
         } else {
             print("!! is not empty, attempt to read")
-            let tempInputStream = inputStream
-            let tempBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
+            self.inputStream = inputStream
+            self.buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
             print("!! before read next buffer")
-            self.bufferCount = try readNextBuffer(inputStream, tempBuffer, bufferSize)
+            self.bufferCount = try readNextBuffer(inputStream, self.buffer!, bufferSize)
             print("!! after read next buffer, count=\(self.bufferCount)")
-            if self.bufferCount == 0 {
-                print("!! zero count, closing")
-                inputStream.close()
-                self.inputStream = nil
-                self.buffer = nil
-                isEmpty = true
-            } else {
-                print("!! non-zero count")
-                self.inputStream = tempInputStream
-                self.buffer = tempBuffer
-            }
         }
-        self.empty = isEmpty
         self.largeStream = self.bufferCount >= bufferSize
     }
 
@@ -113,11 +102,22 @@ public struct InputStreamReader {
 }
 
 
+fileprivate func fakeReadToForceAvailableCheck(_ inputStream: InputStream) {
+    let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: 1)
+    _ = inputStream.read(buffer, maxLength: 0)
+    buffer.deallocate()
+}
+
 fileprivate func readNextBuffer(_ inputStream: InputStream,
                                 _ buffer: UnsafeMutablePointer<UInt8>,
                                 _ bufferSize: Int) throws -> Int
 {
     print("!! before stream read, available: \(inputStream.hasBytesAvailable)...")
+    _ = inputStream.read(buffer, maxLength: 0)
+    print("!! after fake read, available: \(inputStream.hasBytesAvailable)")
+    guard inputStream.hasBytesAvailable else {
+        return 0
+    }
     let read = inputStream.read(buffer, maxLength: bufferSize)
     print("!! after stream read, read=\(read)")
     if read < 0 {
