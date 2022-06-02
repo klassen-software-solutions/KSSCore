@@ -41,6 +41,7 @@ public struct InputStreamReader {
      */
     public init(_ inputStream: InputStream, withBufferSize bufferSize: Int = 2048) throws {
         inputStream.open()
+        fakeReadToForceAvailableCheck(inputStream)
         self.empty = !inputStream.hasBytesAvailable
         self.bufferSize = bufferSize
         if self.empty {
@@ -93,6 +94,16 @@ public struct InputStreamReader {
     }
 }
 
+
+// This is needed since inputStream.hasBytesAvailable may return true if no read has been
+// attempted. At the time of this writing the Apple implementation sets it to false for
+// an empty stream, but the swift.org implementation does not. Attempting to read 0 bytes
+// ensures it is set for both.
+fileprivate func fakeReadToForceAvailableCheck(_ inputStream: InputStream) {
+    let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: 1)
+    _ = inputStream.read(buffer, maxLength: 0)
+    buffer.deallocate()
+}
 
 fileprivate func readNextBuffer(_ inputStream: InputStream,
                                 _ buffer: UnsafeMutablePointer<UInt8>,
