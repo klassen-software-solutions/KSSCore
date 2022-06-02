@@ -43,8 +43,12 @@ public extension String {
     private func prettyPrintJSON() -> String? {
         do {
             if let data = self.data(using: .utf8) {
+                var options: JSONSerialization.WritingOptions = [.prettyPrinted, .sortedKeys]
+                if #available(macOS 10.15, *) {
+                    options = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
+                }
                 let obj = try JSONSerialization.jsonObject(with: data)
-                let newData = try JSONSerialization.data(withJSONObject: obj, options: [.prettyPrinted, .sortedKeys])
+                let newData = try JSONSerialization.data(withJSONObject: obj, options: options)
                 if let newStr = String(data: newData, encoding: .utf8) {
                     return newStr
                 }

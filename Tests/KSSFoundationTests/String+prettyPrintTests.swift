@@ -10,7 +10,7 @@ import KSSFoundation
 
 
 class StringExtensionPrettyPrintTests: XCTestCase {
-    
+
     let jsonExample = "{ \"one\": 1, \"two\": 2, \"array\": [\"item1\", \"item2\"], \"dict\": { \"hello\": \"world\" } }"
     let jsonCorrectResults = """
         {
@@ -51,21 +51,25 @@ class StringExtensionPrettyPrintTests: XCTestCase {
 
     @available(OSX 10.14, *)
     func testPrettyPrint() {
-        XCTAssertEqual(jsonExample.prettyPrint(), jsonCorrectResults)
+        assertEqual(to: jsonCorrectResults) { jsonExample.prettyPrint() }
 #if os(macOS) || os(Linux)
-        XCTAssertEqual(xmlExample.prettyPrint(), xmlCorrectResults)
+        assertEqual(to: xmlCorrectResults) { xmlExample.prettyPrint() }
 #endif
-        XCTAssertEqual(notPPExample.prettyPrint(), notPPExample)
+        assertEqual(to: notPPExample) { notPPExample.prettyPrint() }
 
         // Test for bug #30. Pretty printing xmlCorrectResults should produce itself.
-        XCTAssertEqual(xmlCorrectResults.prettyPrint(), xmlCorrectResults)
+        assertEqual(to: xmlCorrectResults) { xmlCorrectResults.prettyPrint() }
     }
 
     let exampleWithSlash = "{ \"url\": \"http://localhost:8080/hi\" }"
+    let exampleWithSlashCorrectResults = """
+        {
+          "url" : "http://localhost:8080/hi"
+        }
+        """
 
-    @available(OSX 10.14, *)
+    @available(OSX 10.13, *)
     func testBug60PrettyPrintEscapes() {
-        print(exampleWithSlash.prettyPrint())
+        assertEqual(to: exampleWithSlashCorrectResults) { exampleWithSlash.prettyPrint() }
     }
-
 }
