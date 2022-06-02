@@ -117,7 +117,7 @@ fileprivate func readNextBuffer(_ inputStream: InputStream,
                                 _ buffer: UnsafeMutablePointer<UInt8>,
                                 _ bufferSize: Int) throws -> Int
 {
-    print("!! before stream read...")
+    print("!! before stream read, available: \(inputStream.hasBytesAvailable)...")
     let read = inputStream.read(buffer, maxLength: bufferSize)
     print("!! after stream read, read=\(read)")
     if read < 0 {
