@@ -40,23 +40,32 @@ public struct InputStreamReader {
      will need to call close at some point.
      */
     public init(_ inputStream: InputStream, withBufferSize bufferSize: Int = 2048) throws {
+        print("!! init")
         inputStream.open()
+        print("!! opened")
         var isEmpty = !inputStream.hasBytesAvailable
+        print("!! isEmpty: \(isEmpty)")
         self.bufferSize = bufferSize
         if isEmpty {
+            print("!! is empty, closing")
             inputStream.close()
             self.inputStream = nil
             self.buffer = nil
         } else {
+            print("!! is not empty, attempt to read")
             let tempInputStream = inputStream
             let tempBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
+            print("!! before read next buffer")
             self.bufferCount = try readNextBuffer(inputStream, tempBuffer, bufferSize)
+            print("!! after read next buffer, count=\(self.bufferCount)")
             if self.bufferCount == 0 {
+                print("!! zero count, closing")
                 inputStream.close()
                 self.inputStream = nil
                 self.buffer = nil
                 isEmpty = true
             } else {
+                print("!! non-zero count")
                 self.inputStream = tempInputStream
                 self.buffer = tempBuffer
             }
